@@ -19,6 +19,8 @@ package org.gradle.integtests.composite
 import org.gradle.integtests.fixtures.build.BuildTestFile
 import org.gradle.test.fixtures.file.TestFile
 import org.gradle.test.fixtures.maven.MavenModule
+import spock.lang.Ignore
+
 /**
  * Tests for resolving dependencies at configuration-time in a composite build.
  * These tests demonstrate actual behaviour, not necessarily desired behaviour.
@@ -88,6 +90,7 @@ class CompositeBuildConfigurationTimeResolveIntegrationTest extends AbstractComp
         assertResolved buildB.file('b1/build/libs/b1-1.0.jar')
     }
 
+    @Ignore("now that included builds are configured in parallel, ordering here doesn't make sense")
     def "included build uses substituted dependency from preceding included build"() {
         dependency 'org.test:buildC:1.0'
         configurationTimeDependency buildC, 'org.test:buildB:1.0'

@@ -44,7 +44,9 @@ import java.util.Set;
 public class DefaultBuildableCompositeBuildContext implements CompositeBuildContext {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBuildableCompositeBuildContext.class);
 
+    private boolean ready;
     private final IncludedBuilds includedBuilds;
+    // TODO:slg consider concurrency
     private final Set<File> configuredBuilds = Sets.newHashSet();
     private final Set<Pair<ModuleVersionIdentifier, ProjectComponentIdentifier>> provided = Sets.newHashSet();
     private final Map<ProjectComponentIdentifier, RegisteredProject> projectMetadata = Maps.newHashMap();
@@ -92,6 +94,11 @@ public class DefaultBuildableCompositeBuildContext implements CompositeBuildCont
         getRegisteredProject(project).artifacts.add(artifact);
     }
 
+    @Override
+    public void markReady() {
+        ready = true;
+    }
+
     private RegisteredProject getRegisteredProject(ProjectComponentIdentifier project) {
         ensureRegistered(project);
         RegisteredProject registeredProject = projectMetadata.get(project);
@@ -112,12 +119,16 @@ public class DefaultBuildableCompositeBuildContext implements CompositeBuildCont
 
     @Override
     public Action<DependencySubstitution> getRuleAction() {
-        List<Action<DependencySubstitution>> allActions = Lists.newArrayList();
-        if (!provided.isEmpty()) {
-            allActions.add(new CompositeBuildDependencySubstitutions(provided, moduleIdentifierFactory));
+        if (ready) {
+            List<Action<DependencySubstitution>> allActions = Lists.newArrayList();
+            if (!provided.isEmpty()) {
+                allActions.add(new CompositeBuildDependencySubstitutions(provided, moduleIdentifierFactory));
+            }
+            allActions.addAll(substitutionRules);
+            return Actions.composite(allActions);
+        } else {
+            return Actions.doNothing();
         }
-        allActions.addAll(substitutionRules);
-        return Actions.composite(allActions);
     }
 
     @Override

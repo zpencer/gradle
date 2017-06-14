@@ -20,10 +20,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.gradle.StartParameter;
 import org.gradle.api.GradleException;
-import org.gradle.includedbuild.IncludedBuild;
 import org.gradle.api.internal.GradleInternal;
 import org.gradle.api.internal.SettingsInternal;
-import org.gradle.api.logging.Logging;
+import org.gradle.includedbuild.IncludedBuild;
 import org.gradle.includedbuild.internal.IncludedBuildFactory;
 import org.gradle.initialization.SettingsLoader;
 
@@ -33,21 +32,17 @@ import java.util.Map;
 import java.util.Set;
 
 public class CompositeBuildSettingsLoader implements SettingsLoader {
-    private static final org.gradle.api.logging.Logger LOGGER = Logging.getLogger(CompositeBuildSettingsLoader.class);
     private final SettingsLoader delegate;
-    private final CompositeContextBuilder compositeContextBuilder;
     private final IncludedBuildFactory includedBuildFactory;
 
-    public CompositeBuildSettingsLoader(SettingsLoader delegate, CompositeContextBuilder compositeContextBuilder, IncludedBuildFactory includedBuildFactory) {
+    public CompositeBuildSettingsLoader(SettingsLoader delegate, IncludedBuildFactory includedBuildFactory) {
         this.delegate = delegate;
-        this.compositeContextBuilder = compositeContextBuilder;
         this.includedBuildFactory = includedBuildFactory;
     }
 
     @Override
     public SettingsInternal findAndLoadSettings(GradleInternal gradle) {
         SettingsInternal settings = delegate.findAndLoadSettings(gradle);
-        compositeContextBuilder.setRootBuild(settings);
 
         Collection<IncludedBuild> includedBuilds = getIncludedBuilds(gradle.getStartParameter(), settings);
         if (!includedBuilds.isEmpty()) {
@@ -55,7 +50,6 @@ public class CompositeBuildSettingsLoader implements SettingsLoader {
                 throw new GradleException("Use --max-workers to provide at least one worker per build in a composite");
             }
             gradle.setIncludedBuilds(includedBuilds);
-            compositeContextBuilder.addIncludedBuilds(includedBuilds);
         }
 
         return settings;

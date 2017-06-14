@@ -33,4 +33,5 @@ public interface CompositeBuildContext extends LocalComponentProvider, Dependenc
     void register(ProjectComponentIdentifier project, LocalComponentMetadata localComponentMetadata);
     void registerAdditionalArtifact(ProjectComponentIdentifier componentIdentifier, LocalComponentArtifactMetadata compositeCopy);
 
+    void markReady();
 }

@@ -16,8 +16,12 @@
 package org.gradle.includedbuild.internal;
 
 import org.gradle.api.artifacts.component.BuildIdentifier;
+import org.gradle.api.internal.SettingsInternal;
 
 public interface IncludedBuildControllers {
+
+    void withRootProject(SettingsInternal rootBuild);
+
     void startTaskExecution();
 
     void stopTaskExecution();

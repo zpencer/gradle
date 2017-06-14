@@ -16,26 +16,23 @@
 
 package org.gradle.initialization;
 
-import org.gradle.initialization.buildsrc.BuildSourceBuilder;
 import org.gradle.includedbuild.internal.IncludedBuildFactory;
+import org.gradle.initialization.buildsrc.BuildSourceBuilder;
 import org.gradle.internal.composite.CompositeBuildSettingsLoader;
-import org.gradle.internal.composite.CompositeContextBuilder;
 
 public class DefaultSettingsLoaderFactory implements SettingsLoaderFactory {
     private final ISettingsFinder settingsFinder;
     private final SettingsProcessor settingsProcessor;
     private final BuildSourceBuilder buildSourceBuilder;
     private final BuildLoader buildLoader;
-    private final CompositeContextBuilder compositeContextBuilder;
     private final IncludedBuildFactory includedBuildFactory;
 
     public DefaultSettingsLoaderFactory(ISettingsFinder settingsFinder, SettingsProcessor settingsProcessor, BuildSourceBuilder buildSourceBuilder,
-                                        BuildLoader buildLoader, CompositeContextBuilder compositeContextBuilder, IncludedBuildFactory includedBuildFactory) {
+                                        BuildLoader buildLoader, IncludedBuildFactory includedBuildFactory) {
         this.settingsFinder = settingsFinder;
         this.settingsProcessor = settingsProcessor;
         this.buildSourceBuilder = buildSourceBuilder;
         this.buildLoader = buildLoader;
-        this.compositeContextBuilder = compositeContextBuilder;
         this.includedBuildFactory = includedBuildFactory;
     }
 
@@ -48,7 +45,7 @@ public class DefaultSettingsLoaderFactory implements SettingsLoaderFactory {
                     settingsProcessor,
                     buildSourceBuilder
                 ),
-                compositeContextBuilder, includedBuildFactory
+                includedBuildFactory
             ),
             buildLoader);
     }

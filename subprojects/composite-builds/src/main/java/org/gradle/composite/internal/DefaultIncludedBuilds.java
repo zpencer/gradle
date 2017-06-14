@@ -23,7 +23,7 @@ import org.gradle.includedbuild.internal.IncludedBuilds;
 import java.util.Map;
 
 public class DefaultIncludedBuilds implements IncludedBuilds {
-    private final Map<String, IncludedBuild> builds = Maps.newHashMap();
+    private final Map<String, IncludedBuild> builds = Maps.newConcurrentMap();
 
     public void registerBuild(IncludedBuild build) {
         builds.put(build.getName(), build);

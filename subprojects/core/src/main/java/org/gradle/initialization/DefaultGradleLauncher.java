@@ -206,6 +206,10 @@ public class DefaultGradleLauncher implements GradleLauncher {
     private class ConfigureBuild implements RunnableBuildOperation {
         @Override
         public void run(BuildOperationContext context) {
+            if (!isNestedBuild()) {
+                IncludedBuildControllers buildControllers = gradle.getServices().get(IncludedBuildControllers.class);
+                buildControllers.withRootProject(getSettings());
+            }
             buildConfigurer.configure(gradle);
 
             if (!isConfigureOnDemand()) {

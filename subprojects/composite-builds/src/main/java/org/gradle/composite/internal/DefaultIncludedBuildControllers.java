@@ -18,10 +18,12 @@ package org.gradle.composite.internal;
 
 import com.google.common.collect.Maps;
 import org.gradle.api.artifacts.component.BuildIdentifier;
+import org.gradle.api.internal.SettingsInternal;
 import org.gradle.includedbuild.IncludedBuild;
 import org.gradle.includedbuild.internal.IncludedBuildController;
 import org.gradle.includedbuild.internal.IncludedBuildControllers;
 import org.gradle.includedbuild.internal.IncludedBuilds;
+import org.gradle.internal.composite.CompositeContextBuilder;
 import org.gradle.internal.concurrent.CompositeStoppable;
 import org.gradle.internal.concurrent.ExecutorFactory;
 import org.gradle.internal.concurrent.ManagedExecutor;
@@ -33,9 +35,11 @@ class DefaultIncludedBuildControllers implements Stoppable, IncludedBuildControl
     private final Map<BuildIdentifier, IncludedBuildController> buildControllers = Maps.newHashMap();
     private final ManagedExecutor executorService;
     private final IncludedBuilds includedBuilds;
+    private final CompositeContextBuilder compositeContextBuilder;
     private boolean taskExecutionStarted;
 
-    DefaultIncludedBuildControllers(ExecutorFactory executorFactory, IncludedBuilds includedBuilds) {
+    DefaultIncludedBuildControllers(ExecutorFactory executorFactory, CompositeContextBuilder compositeContextBuilder, IncludedBuilds includedBuilds) {
+        this.compositeContextBuilder = compositeContextBuilder;
         this.includedBuilds = includedBuilds;
         this.executorService = executorFactory.create("included builds");
     }
@@ -60,8 +64,14 @@ class DefaultIncludedBuildControllers implements Stoppable, IncludedBuildControl
     }
 
     @Override
+    public void withRootProject(SettingsInternal rootBuild) {
+        compositeContextBuilder.addIncludedBuilds(rootBuild, rootBuild.getGradle().getIncludedBuilds());
+    }
+
+    @Override
     public void startTaskExecution() {
         this.taskExecutionStarted = true;
+
         for (IncludedBuildController buildController : buildControllers.values()) {
             buildController.startTaskExecution();
         }

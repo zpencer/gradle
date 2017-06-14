@@ -26,7 +26,7 @@ import java.util.Set;
 public class DefaultProjectPathRegistry implements ProjectPathRegistry {
     private final Map<Path, ProjectComponentIdentifier> allProjects = Maps.newLinkedHashMap();
 
-    void add(Path projectIdentityPath, ProjectComponentIdentifier identifier) {
+    synchronized void add(Path projectIdentityPath, ProjectComponentIdentifier identifier) {
         allProjects.put(projectIdentityPath, identifier);
     }
 

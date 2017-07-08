@@ -20,9 +20,8 @@ import org.gradle.integtests.fixtures.AbstractIntegrationSpec
 import org.gradle.util.Requires
 
 import static org.gradle.util.TestPrecondition.KOTLIN_SCRIPT
-import static org.gradle.util.TestPrecondition.NOT_WINDOWS
 
-@Requires([KOTLIN_SCRIPT, NOT_WINDOWS])
+@Requires([KOTLIN_SCRIPT])
 class GradleKotlinDslIntegrationTest extends AbstractIntegrationSpec {
 
     @Override

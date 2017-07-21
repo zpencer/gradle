@@ -1,0 +1,5 @@
+*
+!.gitignore
+!copyright
+!copyright/*
+!codeStyleSettings.xml

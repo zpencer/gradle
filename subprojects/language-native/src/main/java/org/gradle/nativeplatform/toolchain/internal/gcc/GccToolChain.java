@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import org.gradle.nativeplatform.toolchain.Gcc;
 import org.gradle.nativeplatform.toolchain.internal.NativeCompilerFactory;
 import org.gradle.nativeplatform.toolchain.internal.gcc.version.CompilerMetaDataProviderFactory;
 import org.gradle.nativeplatform.toolchain.internal.gcc.version.GccVersionResult;
-import org.gradle.process.internal.ExecActionFactory;
 
 
 /**
@@ -32,8 +31,8 @@ import org.gradle.process.internal.ExecActionFactory;
 public class GccToolChain extends AbstractGccCompatibleToolChain implements Gcc {
     public static final String DEFAULT_NAME = "gcc";
 
-    public GccToolChain(Instantiator instantiator, String name, NativeCompilerFactory compilerFactory, OperatingSystem operatingSystem, FileResolver fileResolver, ExecActionFactory execActionFactory, CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory, CompilerMetaDataProviderFactory metaDataProviderFactory) {
-        super(name, compilerFactory, operatingSystem, fileResolver, execActionFactory, compilerOutputFileNamingSchemeFactory, metaDataProviderFactory.gcc(), instantiator);
+    public GccToolChain(Instantiator instantiator, String name, NativeCompilerFactory compilerFactory, OperatingSystem operatingSystem, FileResolver fileResolver, CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory, CompilerMetaDataProviderFactory metaDataProviderFactory) {
+        super(name, compilerFactory, operatingSystem, fileResolver, compilerOutputFileNamingSchemeFactory, metaDataProviderFactory.gcc(), instantiator);
     }
 
     @Override

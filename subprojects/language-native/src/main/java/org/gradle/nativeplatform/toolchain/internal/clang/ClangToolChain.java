@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,12 @@ import org.gradle.nativeplatform.toolchain.internal.NativeCompilerFactory;
 import org.gradle.nativeplatform.toolchain.internal.gcc.AbstractGccCompatibleToolChain;
 import org.gradle.nativeplatform.toolchain.internal.gcc.DefaultGccPlatformToolChain;
 import org.gradle.nativeplatform.toolchain.internal.gcc.version.CompilerMetaDataProviderFactory;
-import org.gradle.process.internal.ExecActionFactory;
 
 public class ClangToolChain extends AbstractGccCompatibleToolChain implements Clang {
     public static final String DEFAULT_NAME = "clang";
 
-    public ClangToolChain(String name, NativeCompilerFactory compilerFactory, OperatingSystem operatingSystem, FileResolver fileResolver, ExecActionFactory execActionFactory, CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory, CompilerMetaDataProviderFactory metaDataProviderFactory, Instantiator instantiator) {
-        super(name, compilerFactory, operatingSystem, fileResolver, execActionFactory, compilerOutputFileNamingSchemeFactory, metaDataProviderFactory.clang(), instantiator);
+    public ClangToolChain(String name, NativeCompilerFactory compilerFactory, OperatingSystem operatingSystem, FileResolver fileResolver, CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory, CompilerMetaDataProviderFactory metaDataProviderFactory, Instantiator instantiator) {
+        super(name, compilerFactory, operatingSystem, fileResolver, compilerOutputFileNamingSchemeFactory, metaDataProviderFactory.clang(), instantiator);
     }
 
     @Override

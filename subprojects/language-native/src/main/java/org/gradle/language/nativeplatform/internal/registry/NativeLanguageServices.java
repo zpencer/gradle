@@ -25,6 +25,10 @@ public class NativeLanguageServices extends AbstractPluginServiceRegistry {
     @Override
     public void registerGradleServices(ServiceRegistration registration) {
         registration.add(DefaultCompilationStateCacheFactory.class);
+    }
+
+    @Override
+    public void registerProjectServices(ServiceRegistration registration) {
         registration.add(DefaultNativeCompilerFactory.class);
     }
 }

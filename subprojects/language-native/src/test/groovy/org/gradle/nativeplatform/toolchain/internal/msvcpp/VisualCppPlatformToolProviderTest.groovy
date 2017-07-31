@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@ import org.gradle.nativeplatform.internal.CompilerOutputFileNamingSchemeFactory
 import org.gradle.nativeplatform.platform.internal.NativePlatformInternal
 import org.gradle.nativeplatform.platform.internal.OperatingSystemInternal
 import org.gradle.nativeplatform.toolchain.internal.NativeCompilerFactory
-import org.gradle.process.internal.ExecActionFactory
 import spock.lang.Specification
 
 class VisualCppPlatformToolProviderTest extends Specification {
     def "windows shared link file names end with lib"() {
         given:
         def operatingSystem = Mock(OperatingSystemInternal)
-        VisualCppPlatformToolProvider toolProvider = new VisualCppPlatformToolProvider(Mock(NativeCompilerFactory), operatingSystem, [:], Mock(VisualCppInstall), Mock(WindowsSdk), Mock(Ucrt), Mock(NativePlatformInternal), Mock(ExecActionFactory), Mock(CompilerOutputFileNamingSchemeFactory))
+        VisualCppPlatformToolProvider toolProvider = new VisualCppPlatformToolProvider(Mock(NativeCompilerFactory), operatingSystem, [:], Mock(VisualCppInstall), Mock(WindowsSdk), Mock(Ucrt), Mock(NativePlatformInternal), Mock(CompilerOutputFileNamingSchemeFactory))
 
         when:
         operatingSystem.getInternalOs() >> OperatingSystem.WINDOWS

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.gradle.nativeplatform.toolchain.internal.NativeToolChainInternal;
 import org.gradle.nativeplatform.toolchain.internal.PlatformToolProvider;
 import org.gradle.nativeplatform.toolchain.internal.UnavailablePlatformToolProvider;
 import org.gradle.platform.base.internal.toolchain.ToolChainAvailability;
-import org.gradle.process.internal.ExecActionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +43,6 @@ public class VisualCppToolChain extends ExtendableToolChain<VisualCppPlatformToo
 
     public static final String DEFAULT_NAME = "visualCpp";
 
-    private final ExecActionFactory execActionFactory;
     private final VisualStudioLocator visualStudioLocator;
     private final WindowsSdkLocator windowsSdkLocator;
     private final UcrtLocator ucrtLocator;
@@ -60,12 +58,11 @@ public class VisualCppToolChain extends ExtendableToolChain<VisualCppPlatformToo
     private WindowsSdk windowsSdk;
     private ToolChainAvailability availability;
 
-    public VisualCppToolChain(String name, NativeCompilerFactory compilerFactory, OperatingSystem operatingSystem, FileResolver fileResolver, ExecActionFactory execActionFactory, CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory, VisualStudioLocator visualStudioLocator, WindowsSdkLocator windowsSdkLocator, UcrtLocator ucrtLocator, Instantiator instantiator) {
+    public VisualCppToolChain(String name, NativeCompilerFactory compilerFactory, OperatingSystem operatingSystem, FileResolver fileResolver,  CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory, VisualStudioLocator visualStudioLocator, WindowsSdkLocator windowsSdkLocator, UcrtLocator ucrtLocator, Instantiator instantiator) {
         super(name, operatingSystem, fileResolver);
         this.name = name;
         this.compilerFactory = compilerFactory;
         this.operatingSystem = operatingSystem;
-        this.execActionFactory = execActionFactory;
         this.compilerOutputFileNamingSchemeFactory = compilerOutputFileNamingSchemeFactory;
         this.visualStudioLocator = visualStudioLocator;
         this.windowsSdkLocator = windowsSdkLocator;
@@ -120,7 +117,7 @@ public class VisualCppToolChain extends ExtendableToolChain<VisualCppPlatformToo
         DefaultVisualCppPlatformToolChain configurableToolChain = instantiator.newInstance(DefaultVisualCppPlatformToolChain.class, targetPlatform, instantiator);
         configureActions.execute(configurableToolChain);
 
-        return new VisualCppPlatformToolProvider(compilerFactory, targetPlatform.getOperatingSystem(), configurableToolChain.tools, visualCpp, windowsSdk, ucrt, targetPlatform, execActionFactory, compilerOutputFileNamingSchemeFactory);
+        return new VisualCppPlatformToolProvider(compilerFactory, targetPlatform.getOperatingSystem(), configurableToolChain.tools, visualCpp, windowsSdk, ucrt, targetPlatform, compilerOutputFileNamingSchemeFactory);
     }
 
     private ToolChainAvailability getAvailability() {

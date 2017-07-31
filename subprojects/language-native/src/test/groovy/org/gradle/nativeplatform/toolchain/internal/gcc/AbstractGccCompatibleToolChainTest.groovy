@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ import org.gradle.nativeplatform.toolchain.internal.tools.CommandLineToolSearchR
 import org.gradle.nativeplatform.toolchain.internal.tools.GccCommandLineToolConfigurationInternal
 import org.gradle.nativeplatform.toolchain.internal.tools.ToolSearchPath
 import org.gradle.platform.base.internal.toolchain.ToolSearchResult
-import org.gradle.process.internal.ExecActionFactory
 import org.gradle.util.TreeVisitor
 import org.gradle.util.UsesNativeServices
 import spock.lang.Specification
@@ -47,7 +46,6 @@ import static org.gradle.nativeplatform.platform.internal.ArchitectureInternal.I
 @UsesNativeServices
 class AbstractGccCompatibleToolChainTest extends Specification {
     def fileResolver = Mock(FileResolver)
-    def execActionFactory = Mock(ExecActionFactory)
     def toolSearchPath = Stub(ToolSearchPath)
     def tool = Stub(CommandLineToolSearchResult) {
         isAvailable() >> true
@@ -64,7 +62,7 @@ class AbstractGccCompatibleToolChainTest extends Specification {
     def compilerOutputFileNamingSchemeFactory = Stub(CompilerOutputFileNamingSchemeFactory)
 
     def instantiator = DirectInstantiator.INSTANCE
-    def toolChain = new TestNativeToolChain("test", compilerFactory, operatingSystem, fileResolver, execActionFactory, compilerOutputFileNamingSchemeFactory, toolSearchPath, metaDataProvider, instantiator)
+    def toolChain = new TestNativeToolChain("test", compilerFactory, operatingSystem, fileResolver, compilerOutputFileNamingSchemeFactory, toolSearchPath, metaDataProvider, instantiator)
     def platform = Stub(NativePlatformInternal)
 
     def dummyOs = new DefaultOperatingSystem("currentOS", OperatingSystem.current())
@@ -343,8 +341,8 @@ class AbstractGccCompatibleToolChainTest extends Specification {
     }
 
     static class TestNativeToolChain extends AbstractGccCompatibleToolChain {
-        TestNativeToolChain(String name, NativeCompilerFactory compilerFactory, OperatingSystem operatingSystem, FileResolver fileResolver, ExecActionFactory execActionFactory, CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory, ToolSearchPath tools, CompilerMetaDataProvider metaDataProvider, Instantiator instantiator) {
-            super(name, compilerFactory, operatingSystem, fileResolver, execActionFactory, compilerOutputFileNamingSchemeFactory, tools, metaDataProvider, instantiator)
+        TestNativeToolChain(String name, NativeCompilerFactory compilerFactory, OperatingSystem operatingSystem, FileResolver fileResolver, CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory, ToolSearchPath tools, CompilerMetaDataProvider metaDataProvider, Instantiator instantiator) {
+            super(name, compilerFactory, operatingSystem, fileResolver, compilerOutputFileNamingSchemeFactory, tools, metaDataProvider, instantiator)
         }
 
         @Override

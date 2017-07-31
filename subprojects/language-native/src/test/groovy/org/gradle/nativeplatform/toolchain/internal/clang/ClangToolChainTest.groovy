@@ -26,7 +26,6 @@ import org.gradle.nativeplatform.platform.internal.NativePlatformInternal
 import org.gradle.nativeplatform.toolchain.GccPlatformToolChain
 import org.gradle.nativeplatform.toolchain.internal.NativeCompilerFactory
 import org.gradle.nativeplatform.toolchain.internal.gcc.version.CompilerMetaDataProviderFactory
-import org.gradle.process.internal.ExecActionFactory
 import org.gradle.test.fixtures.file.TestNameTestDirectoryProvider
 import org.junit.Rule
 import spock.lang.Specification
@@ -35,7 +34,7 @@ class ClangToolChainTest extends Specification {
     @Rule final TestNameTestDirectoryProvider tmpDirProvider = new TestNameTestDirectoryProvider()
     final FileResolver fileResolver = Mock(FileResolver)
     final Instantiator instantiator = DirectInstantiator.INSTANCE
-    final toolChain = new ClangToolChain("clang", Stub(NativeCompilerFactory), Stub(OperatingSystem), fileResolver, Stub(ExecActionFactory), Stub(CompilerOutputFileNamingSchemeFactory), Stub(CompilerMetaDataProviderFactory), instantiator)
+    final toolChain = new ClangToolChain("clang", Stub(NativeCompilerFactory), Stub(OperatingSystem), fileResolver, Stub(CompilerOutputFileNamingSchemeFactory), Stub(CompilerMetaDataProviderFactory), instantiator)
 
     def "provides default tools"() {
         def action = Mock(Action)

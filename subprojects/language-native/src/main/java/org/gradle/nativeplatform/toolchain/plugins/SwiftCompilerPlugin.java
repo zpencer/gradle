@@ -32,7 +32,6 @@ import org.gradle.nativeplatform.toolchain.Swiftc;
 import org.gradle.nativeplatform.toolchain.internal.NativeCompilerFactory;
 import org.gradle.nativeplatform.toolchain.internal.NativeToolChainRegistryInternal;
 import org.gradle.nativeplatform.toolchain.internal.swift.SwiftcToolChain;
-import org.gradle.process.internal.ExecActionFactory;
 
 /**
  * A {@link Plugin} which makes the <a href="https://swift.org/compiler-stdlib/">Swiftc</a> compiler available for compiling Swift code.
@@ -51,14 +50,13 @@ public class SwiftCompilerPlugin implements Plugin<Project> {
         @Defaults
         public static void addToolChain(NativeToolChainRegistryInternal toolChainRegistry, ServiceRegistry serviceRegistry) {
             final FileResolver fileResolver = serviceRegistry.get(FileResolver.class);
-            final ExecActionFactory execActionFactory = serviceRegistry.get(ExecActionFactory.class);
             final CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory = serviceRegistry.get(CompilerOutputFileNamingSchemeFactory.class);
             final Instantiator instantiator = serviceRegistry.get(Instantiator.class);
             final NativeCompilerFactory compilerFactory = serviceRegistry.get(NativeCompilerFactory.class);
 
             toolChainRegistry.registerFactory(Swiftc.class, new NamedDomainObjectFactory<Swiftc>() {
                 public Swiftc create(String name) {
-                    return instantiator.newInstance(SwiftcToolChain.class, name, compilerFactory, OperatingSystem.current(), fileResolver, execActionFactory, compilerOutputFileNamingSchemeFactory, instantiator);
+                    return instantiator.newInstance(SwiftcToolChain.class, name, compilerFactory, OperatingSystem.current(), fileResolver, compilerOutputFileNamingSchemeFactory, instantiator);
                 }
             });
             toolChainRegistry.registerDefaultToolChain(SwiftcToolChain.DEFAULT_NAME, Swiftc.class);

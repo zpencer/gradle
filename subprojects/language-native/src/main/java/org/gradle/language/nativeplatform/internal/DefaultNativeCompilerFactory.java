@@ -25,41 +25,48 @@ import org.gradle.language.nativeplatform.internal.incremental.IncrementalNative
 import org.gradle.nativeplatform.internal.BinaryToolSpec;
 import org.gradle.nativeplatform.internal.CompilerOutputFileNamingSchemeFactory;
 import org.gradle.nativeplatform.toolchain.internal.CommandLineToolBackedCompiler;
-import org.gradle.nativeplatform.toolchain.internal.CommandLineToolInvocationWorker;
+import org.gradle.nativeplatform.toolchain.internal.DefaultCommandLineToolInvocationWorker;
 import org.gradle.nativeplatform.toolchain.internal.NativeCompileSpec;
 import org.gradle.nativeplatform.toolchain.internal.NativeCompilerFactory;
 import org.gradle.nativeplatform.toolchain.internal.OutputCleaningCompiler;
 import org.gradle.nativeplatform.toolchain.internal.ParallelCompiler;
+import org.gradle.process.internal.ExecActionFactory;
+
+import java.io.File;
 
 public class DefaultNativeCompilerFactory implements NativeCompilerFactory {
     private final BuildOperationExecutor buildOperationExecutor;
     private final FileHasher hasher;
     private final CompilationStateCacheFactory compilationStateCacheFactory;
     private final DirectoryFileTreeFactory directoryFileTreeFactory;
+    private final ExecActionFactory execActionFactory;
+    private final CompilerOutputFileNamingSchemeFactory outputFileNamingSchemeFactory;
 
-    public DefaultNativeCompilerFactory(BuildOperationExecutor buildOperationExecutor, FileHasher hasher, CompilationStateCacheFactory compilationStateCacheFactory, DirectoryFileTreeFactory directoryFileTreeFactory) {
+    public DefaultNativeCompilerFactory(BuildOperationExecutor buildOperationExecutor, FileHasher hasher, CompilationStateCacheFactory compilationStateCacheFactory, DirectoryFileTreeFactory directoryFileTreeFactory, ExecActionFactory execActionFactory, CompilerOutputFileNamingSchemeFactory outputFileNamingSchemeFactory) {
         this.buildOperationExecutor = buildOperationExecutor;
         this.hasher = hasher;
         this.compilationStateCacheFactory = compilationStateCacheFactory;
         this.directoryFileTreeFactory = directoryFileTreeFactory;
+        this.execActionFactory = execActionFactory;
+        this.outputFileNamingSchemeFactory = outputFileNamingSchemeFactory;
     }
 
     @Override
-    public <T extends BinaryToolSpec> Compiler<T> compiler(CommandLineToolBackedCompiler<T> compiler, CommandLineToolInvocationWorker commandLineToolInvocationWorker) {
-        return new ParallelCompiler<T>(buildOperationExecutor, commandLineToolInvocationWorker, compiler);
+    public <T extends BinaryToolSpec> Compiler<T> compiler(CommandLineToolBackedCompiler<T> compiler, String toolName, File toolExecutable) {
+        return new ParallelCompiler<T>(buildOperationExecutor, new DefaultCommandLineToolInvocationWorker(toolName, toolExecutable, execActionFactory), compiler);
     }
 
     @Override
-    public <T extends NativeCompileSpec> Compiler<T> incrementalAndParallelCompiler(CommandLineToolBackedCompiler<T> compiler, CommandLineToolInvocationWorker commandLineToolInvocationWorker, CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory, CPreprocessorDialect dialect, String outputFileSuffix) {
+    public <T extends NativeCompileSpec> Compiler<T> incrementalAndParallelCompiler(CommandLineToolBackedCompiler<T> compiler, String toolName, File toolExecutable, CPreprocessorDialect dialect, String outputFileSuffix) {
         return new IncrementalNativeCompiler<T>(
             hasher,
             compilationStateCacheFactory,
             new OutputCleaningCompiler<T>(
                 new ParallelCompiler<T>(
                     buildOperationExecutor,
-                    commandLineToolInvocationWorker,
+                    new DefaultCommandLineToolInvocationWorker(toolName, toolExecutable, execActionFactory),
                     compiler),
-                compilerOutputFileNamingSchemeFactory,
+                outputFileNamingSchemeFactory,
                 outputFileSuffix),
             dialect,
             directoryFileTreeFactory);

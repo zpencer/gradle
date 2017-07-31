@@ -24,8 +24,6 @@ import org.gradle.nativeplatform.platform.internal.OperatingSystemInternal;
 import org.gradle.nativeplatform.toolchain.SwiftcPlatformToolChain;
 import org.gradle.nativeplatform.toolchain.internal.AbstractPlatformToolProvider;
 import org.gradle.nativeplatform.toolchain.internal.CommandLineToolContext;
-import org.gradle.nativeplatform.toolchain.internal.CommandLineToolInvocationWorker;
-import org.gradle.nativeplatform.toolchain.internal.DefaultCommandLineToolInvocationWorker;
 import org.gradle.nativeplatform.toolchain.internal.DefaultMutableCommandLineToolContext;
 import org.gradle.nativeplatform.toolchain.internal.MutableCommandLineToolContext;
 import org.gradle.nativeplatform.toolchain.internal.NativeCompilerFactory;
@@ -33,22 +31,21 @@ import org.gradle.nativeplatform.toolchain.internal.ToolType;
 import org.gradle.nativeplatform.toolchain.internal.compilespec.SwiftCompileSpec;
 import org.gradle.nativeplatform.toolchain.internal.tools.CommandLineToolConfigurationInternal;
 import org.gradle.nativeplatform.toolchain.internal.tools.ToolSearchPath;
-import org.gradle.process.internal.ExecActionFactory;
+
+import java.io.File;
 
 class SwiftPlatformToolProvider extends AbstractPlatformToolProvider {
     private final ToolSearchPath toolSearchPath;
     private final NativeCompilerFactory compilerFactory;
     private final SwiftcPlatformToolChain toolRegistry;
-    private final ExecActionFactory execActionFactory;
     private final CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory;
 
-    SwiftPlatformToolProvider(NativeCompilerFactory compilerFactory, OperatingSystemInternal targetOperatingSystem, ToolSearchPath toolSearchPath, SwiftcPlatformToolChain toolRegistry, ExecActionFactory execActionFactory, CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory) {
+    SwiftPlatformToolProvider(NativeCompilerFactory compilerFactory, OperatingSystemInternal targetOperatingSystem, ToolSearchPath toolSearchPath, SwiftcPlatformToolChain toolRegistry, CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory) {
         super(targetOperatingSystem);
         this.compilerFactory = compilerFactory;
         this.toolRegistry = toolRegistry;
         this.toolSearchPath = toolSearchPath;
         this.compilerOutputFileNamingSchemeFactory = compilerOutputFileNamingSchemeFactory;
-        this.execActionFactory = execActionFactory;
     }
 
     @Override
@@ -63,17 +60,17 @@ class SwiftPlatformToolProvider extends AbstractPlatformToolProvider {
     protected Compiler<LinkerSpec> createLinker() {
         CommandLineToolConfigurationInternal linkerTool = (CommandLineToolConfigurationInternal) toolRegistry.getLinker();
         SwiftLinker linker = new SwiftLinker(context(linkerTool));
-        return compilerFactory.compiler(linker, commandLineTool(ToolType.LINKER, "swiftc"));
+        return compilerFactory.compiler(linker, ToolType.LINKER.getToolName(), commandLineTool(ToolType.LINKER, "swiftc"));
     }
 
     private Compiler<SwiftCompileSpec> createSwiftCompiler() {
         CommandLineToolConfigurationInternal swiftCompilerTool = (CommandLineToolConfigurationInternal) toolRegistry.getSwiftCompiler();
         SwiftCompiler compiler = new SwiftCompiler(compilerOutputFileNamingSchemeFactory, context(swiftCompilerTool), getObjectFileExtension());
-        return compilerFactory.compiler(compiler, commandLineTool(ToolType.SWIFT_COMPILER, "swiftc"));
+        return compilerFactory.compiler(compiler, ToolType.SWIFT_COMPILER.getToolName(), commandLineTool(ToolType.SWIFT_COMPILER, "swiftc"));
     }
 
-    private CommandLineToolInvocationWorker commandLineTool(ToolType key, String exeName) {
-        return new DefaultCommandLineToolInvocationWorker(key.getToolName(), toolSearchPath.locate(key, exeName).getTool(), execActionFactory);
+    private File commandLineTool(ToolType key, String exeName) {
+        return toolSearchPath.locate(key, exeName).getTool();
     }
 
     private CommandLineToolContext context(CommandLineToolConfigurationInternal toolConfiguration) {

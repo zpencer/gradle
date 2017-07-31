@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.gradle.nativeplatform.toolchain.VisualCppPlatformToolChain
 import org.gradle.nativeplatform.toolchain.internal.NativeCompilerFactory
 import org.gradle.platform.base.internal.toolchain.ToolChainAvailability
 import org.gradle.platform.base.internal.toolchain.ToolSearchResult
-import org.gradle.process.internal.ExecActionFactory
 import org.gradle.test.fixtures.file.TestDirectoryProvider
 import org.gradle.test.fixtures.file.TestNameTestDirectoryProvider
 import org.gradle.util.TreeVisitor
@@ -37,7 +36,6 @@ import spock.lang.Specification
 class VisualCppToolChainTest extends Specification {
     TestDirectoryProvider testDirectoryProvider = new TestNameTestDirectoryProvider()
     final FileResolver fileResolver = Mock(FileResolver)
-    final ExecActionFactory execActionFactory = Mock(ExecActionFactory)
     final CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory = Mock(CompilerOutputFileNamingSchemeFactory)
     final VisualStudioLocator.SearchResult visualStudioLookup = Stub(VisualStudioLocator.SearchResult)
     final WindowsSdkLocator.SearchResult windowsSdkLookup = Stub(WindowsSdkLocator.SearchResult)
@@ -60,7 +58,7 @@ class VisualCppToolChainTest extends Specification {
     }
 
     def setup() {
-        toolChain = new VisualCppToolChain("visualCpp", compilerFactory, operatingSystem, fileResolver, execActionFactory, compilerOutputFileNamingSchemeFactory, visualStudioLocator, windowsSdkLocator, ucrtLocator, instantiator)
+        toolChain = new VisualCppToolChain("visualCpp", compilerFactory, operatingSystem, fileResolver, compilerOutputFileNamingSchemeFactory, visualStudioLocator, windowsSdkLocator, ucrtLocator, instantiator)
     }
 
     def "installs an unavailable tool chain when not windows"() {
@@ -68,7 +66,7 @@ class VisualCppToolChainTest extends Specification {
         def operatingSystem = Stub(OperatingSystem)
         operatingSystem.isWindows() >> false
 		ucrtLookup.available >> false
-        def toolChain = new VisualCppToolChain("visualCpp", compilerFactory, operatingSystem, fileResolver, execActionFactory, compilerOutputFileNamingSchemeFactory, visualStudioLocator, windowsSdkLocator, ucrtLocator, instantiator)
+        def toolChain = new VisualCppToolChain("visualCpp", compilerFactory, operatingSystem, fileResolver, compilerOutputFileNamingSchemeFactory, visualStudioLocator, windowsSdkLocator, ucrtLocator, instantiator)
 
         when:
         def availability = new ToolChainAvailability()

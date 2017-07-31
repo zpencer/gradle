@@ -33,7 +33,6 @@ import org.gradle.nativeplatform.toolchain.internal.NativeCompilerFactory;
 import org.gradle.nativeplatform.toolchain.internal.NativeToolChainRegistryInternal;
 import org.gradle.nativeplatform.toolchain.internal.gcc.GccToolChain;
 import org.gradle.nativeplatform.toolchain.internal.gcc.version.CompilerMetaDataProviderFactory;
-import org.gradle.process.internal.ExecActionFactory;
 
 /**
  * A {@link Plugin} which makes the <a href="http://gcc.gnu.org/">GNU GCC/G++ compiler</a> available for compiling C/C++ code.
@@ -50,7 +49,6 @@ public class GccCompilerPlugin implements Plugin<Project> {
         @Defaults
         public static void addToolChain(NativeToolChainRegistryInternal toolChainRegistry, ServiceRegistry serviceRegistry) {
             final FileResolver fileResolver = serviceRegistry.get(FileResolver.class);
-            final ExecActionFactory execActionFactory = serviceRegistry.get(ExecActionFactory.class);
             final CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory = serviceRegistry.get(CompilerOutputFileNamingSchemeFactory.class);
             final Instantiator instantiator = serviceRegistry.get(Instantiator.class);
             final NativeCompilerFactory compilerFactory = serviceRegistry.get(NativeCompilerFactory.class);
@@ -58,7 +56,7 @@ public class GccCompilerPlugin implements Plugin<Project> {
 
             toolChainRegistry.registerFactory(Gcc.class, new NamedDomainObjectFactory<Gcc>() {
                 public Gcc create(String name) {
-                    return instantiator.newInstance(GccToolChain.class, instantiator, name, compilerFactory, OperatingSystem.current(), fileResolver, execActionFactory, compilerOutputFileNamingSchemeFactory, metaDataProviderFactory);
+                    return instantiator.newInstance(GccToolChain.class, instantiator, name, compilerFactory, OperatingSystem.current(), fileResolver, compilerOutputFileNamingSchemeFactory, metaDataProviderFactory);
                 }
             });
             toolChainRegistry.registerDefaultToolChain(GccToolChain.DEFAULT_NAME, Gcc.class);

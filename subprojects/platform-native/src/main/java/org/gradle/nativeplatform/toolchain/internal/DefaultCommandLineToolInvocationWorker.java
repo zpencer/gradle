@@ -30,19 +30,15 @@ import java.io.File;
 import java.nio.charset.Charset;
 
 public class DefaultCommandLineToolInvocationWorker implements CommandLineToolInvocationWorker {
-    private final String name;
-    private final File executable;
     private final ExecActionFactory execActionFactory;
 
-    public DefaultCommandLineToolInvocationWorker(String name, File executable, ExecActionFactory execActionFactory) {
-        this.name = name;
-        this.executable = executable;
+    public DefaultCommandLineToolInvocationWorker(ExecActionFactory execActionFactory) {
         this.execActionFactory = execActionFactory;
     }
 
     @Override
     public String getDisplayName() {
-        return "command line tool '" + name + "'";
+        return "command line worker";
     }
 
     @Override
@@ -55,7 +51,7 @@ public class DefaultCommandLineToolInvocationWorker implements CommandLineToolIn
         BuildOperationDescriptor description = invocation.description().build();
         ExecAction toolExec = execActionFactory.newExecAction();
 
-        toolExec.executable(executable);
+        toolExec.executable(invocation.getExecutable());
         if (invocation.getWorkDirectory() != null) {
             GFileUtils.mkdirs(invocation.getWorkDirectory());
             toolExec.workingDir(invocation.getWorkDirectory());
@@ -85,7 +81,7 @@ public class DefaultCommandLineToolInvocationWorker implements CommandLineToolIn
             invocation.getLogger().operationSuccess(description.getDisplayName(), combineOutput(stdOutput, errOutput));
         } catch (ExecException e) {
             invocation.getLogger().operationFailed(description.getDisplayName(), combineOutput(stdOutput, errOutput));
-            throw new CommandLineToolInvocationFailure(invocation, String.format("%s failed while %s.", name, description.getDisplayName()));
+            throw new CommandLineToolInvocationFailure(invocation, String.format("%s failed while %s.", invocation.getToolName(), description.getDisplayName()));
         }
     }
 

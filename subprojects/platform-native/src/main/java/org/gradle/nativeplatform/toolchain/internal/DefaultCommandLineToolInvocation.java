@@ -23,18 +23,32 @@ import java.util.List;
 import java.util.Map;
 
 class DefaultCommandLineToolInvocation implements CommandLineToolInvocation {
+    private final String toolName;
+    private final File executable;
     private String description;
     private final File workDirectory;
     private final Iterable<String> args;
     private final CommandLineToolContext context;
     private final BuildOperationLogger oplogger;
 
-    DefaultCommandLineToolInvocation(String description, File workDirectory, Iterable<String> args, CommandLineToolContext context, BuildOperationLogger oplogger) {
+    DefaultCommandLineToolInvocation(String toolName, File executable, String description, File workDirectory, Iterable<String> args, CommandLineToolContext context, BuildOperationLogger oplogger) {
+        this.toolName = toolName;
+        this.executable = executable;
         this.description = description;
         this.workDirectory = workDirectory;
         this.args = args;
         this.context = context;
         this.oplogger = oplogger;
+    }
+
+    @Override
+    public String getToolName() {
+        return toolName;
+    }
+
+    @Override
+    public File getExecutable() {
+        return executable;
     }
 
     @Override

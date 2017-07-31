@@ -59,22 +59,19 @@ class SwiftPlatformToolProvider extends AbstractPlatformToolProvider {
     @Override
     protected Compiler<LinkerSpec> createLinker() {
         CommandLineToolConfigurationInternal linkerTool = (CommandLineToolConfigurationInternal) toolRegistry.getLinker();
-        SwiftLinker linker = new SwiftLinker(context(linkerTool));
-        return compilerFactory.compiler(linker, ToolType.LINKER.getToolName(), commandLineTool(ToolType.LINKER, "swiftc"));
+        SwiftLinker linker = new SwiftLinker(context(ToolType.LINKER, "swiftc", linkerTool));
+        return compilerFactory.compiler(linker);
     }
 
     private Compiler<SwiftCompileSpec> createSwiftCompiler() {
         CommandLineToolConfigurationInternal swiftCompilerTool = (CommandLineToolConfigurationInternal) toolRegistry.getSwiftCompiler();
-        SwiftCompiler compiler = new SwiftCompiler(compilerOutputFileNamingSchemeFactory, context(swiftCompilerTool), getObjectFileExtension());
-        return compilerFactory.compiler(compiler, ToolType.SWIFT_COMPILER.getToolName(), commandLineTool(ToolType.SWIFT_COMPILER, "swiftc"));
+        SwiftCompiler compiler = new SwiftCompiler(compilerOutputFileNamingSchemeFactory, context(ToolType.SWIFT_COMPILER, "swiftc", swiftCompilerTool), getObjectFileExtension());
+        return compilerFactory.compiler(compiler);
     }
 
-    private File commandLineTool(ToolType key, String exeName) {
-        return toolSearchPath.locate(key, exeName).getTool();
-    }
-
-    private CommandLineToolContext context(CommandLineToolConfigurationInternal toolConfiguration) {
-        MutableCommandLineToolContext baseInvocation = new DefaultMutableCommandLineToolContext();
+    private CommandLineToolContext context(ToolType key, String exeName, CommandLineToolConfigurationInternal toolConfiguration) {
+        File toolExe = toolSearchPath.locate(key, exeName).getTool();
+        MutableCommandLineToolContext baseInvocation = new DefaultMutableCommandLineToolContext(key.getToolName(), toolExe);
         baseInvocation.setArgAction(toolConfiguration.getArgAction());
         return baseInvocation;
     }

@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface CommandLineToolInvocation extends BuildOperation  {
+    String getToolName();
+
+    File getExecutable();
 
     List<File> getPath();
 

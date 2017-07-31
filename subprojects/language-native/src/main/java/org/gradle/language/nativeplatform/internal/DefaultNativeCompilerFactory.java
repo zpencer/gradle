@@ -32,8 +32,6 @@ import org.gradle.nativeplatform.toolchain.internal.OutputCleaningCompiler;
 import org.gradle.nativeplatform.toolchain.internal.ParallelCompiler;
 import org.gradle.process.internal.ExecActionFactory;
 
-import java.io.File;
-
 public class DefaultNativeCompilerFactory implements NativeCompilerFactory {
     private final BuildOperationExecutor buildOperationExecutor;
     private final FileHasher hasher;
@@ -52,19 +50,19 @@ public class DefaultNativeCompilerFactory implements NativeCompilerFactory {
     }
 
     @Override
-    public <T extends BinaryToolSpec> Compiler<T> compiler(CommandLineToolBackedCompiler<T> compiler, String toolName, File toolExecutable) {
-        return new ParallelCompiler<T>(buildOperationExecutor, new DefaultCommandLineToolInvocationWorker(toolName, toolExecutable, execActionFactory), compiler);
+    public <T extends BinaryToolSpec> Compiler<T> compiler(CommandLineToolBackedCompiler<T> compiler) {
+        return new ParallelCompiler<T>(buildOperationExecutor, new DefaultCommandLineToolInvocationWorker(execActionFactory), compiler);
     }
 
     @Override
-    public <T extends NativeCompileSpec> Compiler<T> incrementalAndParallelCompiler(CommandLineToolBackedCompiler<T> compiler, String toolName, File toolExecutable, CPreprocessorDialect dialect, String outputFileSuffix) {
+    public <T extends NativeCompileSpec> Compiler<T> incrementalAndParallelCompiler(CommandLineToolBackedCompiler<T> compiler, CPreprocessorDialect dialect, String outputFileSuffix) {
         return new IncrementalNativeCompiler<T>(
             hasher,
             compilationStateCacheFactory,
             new OutputCleaningCompiler<T>(
                 new ParallelCompiler<T>(
                     buildOperationExecutor,
-                    new DefaultCommandLineToolInvocationWorker(toolName, toolExecutable, execActionFactory),
+                    new DefaultCommandLineToolInvocationWorker(execActionFactory),
                     compiler),
                 outputFileNamingSchemeFactory,
                 outputFileSuffix),

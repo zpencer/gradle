@@ -19,8 +19,6 @@ package org.gradle.nativeplatform.toolchain.internal;
 import org.gradle.language.base.internal.compile.Compiler;
 import org.gradle.nativeplatform.internal.BinaryToolSpec;
 
-import java.io.File;
-
 public interface NativeCompilerFactory {
     enum CPreprocessorDialect {
         StandardC, Gcc
@@ -29,10 +27,10 @@ public interface NativeCompilerFactory {
     /**
      * Creates a {@link Compiler} for a compiler that runs one or more command-line tools. The provided compiler implementation is responsible for taking care of incremental compile, if relevant.
      */
-    <T extends BinaryToolSpec> Compiler<T> compiler(CommandLineToolBackedCompiler<T> compiler, String toolName, File toolExecutable);
+    <T extends BinaryToolSpec> Compiler<T> compiler(CommandLineToolBackedCompiler<T> compiler);
 
     /**
      * Creates a {@link Compiler} implementation that takes care of incremental compile for a language that uses C preprocessor header files, and where each source file is compiled separately.
      */
-    <T extends NativeCompileSpec> Compiler<T> incrementalAndParallelCompiler(CommandLineToolBackedCompiler<T> compiler, String toolName, File toolExecutable, CPreprocessorDialect dialect, String outputFileSuffix);
+    <T extends NativeCompileSpec> Compiler<T> incrementalAndParallelCompiler(CommandLineToolBackedCompiler<T> compiler, CPreprocessorDialect dialect, String outputFileSuffix);
 }

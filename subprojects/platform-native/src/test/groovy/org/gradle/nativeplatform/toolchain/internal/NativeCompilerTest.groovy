@@ -35,7 +35,7 @@ abstract class NativeCompilerTest extends Specification {
 
     protected abstract NativeCompiler getCompiler(CommandLineToolContext invocationContext, String objectFileExtension, boolean useCommandFile)
     protected NativeCompiler getCompiler() {
-        getCompiler(new DefaultMutableCommandLineToolContext(), O_EXT, false)
+        getCompiler(new DefaultMutableCommandLineToolContext("tool", new File("tool-exe")), O_EXT, false)
     }
 
     protected abstract Class<? extends NativeCompileSpec> getCompileSpecType()
@@ -107,7 +107,7 @@ abstract class NativeCompilerTest extends Specification {
     @Unroll("Compiles source files (options.txt=#withOptionsFile) with #description")
     def "compiles all source files in separate executions"() {
         given:
-        def invocationContext = new DefaultMutableCommandLineToolContext()
+        def invocationContext = new DefaultMutableCommandLineToolContext("tool", new File("tool-exe"))
         def compiler = getCompiler(invocationContext, O_EXT, withOptionsFile)
         def testDir = tmpDirProvider.testDirectory
         def objectFileDir = testDir.file("output/objects")
@@ -144,7 +144,7 @@ abstract class NativeCompilerTest extends Specification {
 
     def "user-supplied arg actions run once per execute"() {
         given:
-        def invocationContext = new DefaultMutableCommandLineToolContext()
+        def invocationContext = new DefaultMutableCommandLineToolContext("tool", new File("tool-exe"))
         def action = Mock(Action)
         invocationContext.setArgAction(action)
         def compiler = getCompiler(invocationContext, O_EXT, false)
@@ -174,7 +174,7 @@ abstract class NativeCompilerTest extends Specification {
 
     def "options file is written"() {
         given:
-        def invocationContext = new DefaultMutableCommandLineToolContext()
+        def invocationContext = new DefaultMutableCommandLineToolContext("tool", new File("tool-exe"))
         def compiler = getCompiler(invocationContext, O_EXT, true)
         def testDir = tmpDirProvider.testDirectory
         def includeDir = testDir.file("includes")

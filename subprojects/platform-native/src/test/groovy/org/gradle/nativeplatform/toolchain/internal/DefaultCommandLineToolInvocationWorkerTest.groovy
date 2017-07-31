@@ -31,10 +31,10 @@ class DefaultCommandLineToolInvocationWorkerTest extends Specification {
             newExecAction() >> execAction
         }
 
-        def context = new DefaultMutableCommandLineToolContext()
         def executable = Mock(File)
-        def commandLineTool = new DefaultCommandLineToolInvocationWorker("Tool", executable, execActionFactory)
-        def invocation = new DefaultCommandLineToolInvocation("doing something", null, [], context, Mock(BuildOperationLogger))
+        def context = new DefaultMutableCommandLineToolContext("Tool", executable)
+        def commandLineTool = new DefaultCommandLineToolInvocationWorker(execActionFactory)
+        def invocation = new DefaultCommandLineToolInvocation("Tool", executable, "doing something", null, [], context, Mock(BuildOperationLogger))
 
         when:
         commandLineTool.execute(invocation, null)

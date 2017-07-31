@@ -27,9 +27,16 @@ import java.util.List;
 import java.util.Map;
 
 public class DefaultMutableCommandLineToolContext implements MutableCommandLineToolContext {
+    private final String toolName;
+    private final File executable;
     private Action<List<String>> postArgsAction = Actions.doNothing();
     private final Map<String, String> environment = new HashMap<String, String>();
     private final List<File> path = new ArrayList<File>();
+
+    public DefaultMutableCommandLineToolContext(String toolName, File executable) {
+        this.toolName = toolName;
+        this.executable = executable;
+    }
 
     @Override
     public void setArgAction(Action<List<String>> argAction) {
@@ -68,7 +75,7 @@ public class DefaultMutableCommandLineToolContext implements MutableCommandLineT
 
     @Override
     public CommandLineToolInvocation createInvocation(String description, File workDirectory, Iterable<String> args, BuildOperationLogger oplogger) {
-        return new DefaultCommandLineToolInvocation(description, workDirectory, args, this, oplogger);
+        return new DefaultCommandLineToolInvocation(toolName, executable, description, workDirectory, args, this, oplogger);
     }
 
     @Override

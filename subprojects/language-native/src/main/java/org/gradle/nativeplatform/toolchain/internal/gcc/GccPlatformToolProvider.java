@@ -61,64 +61,56 @@ class GccPlatformToolProvider extends AbstractPlatformToolProvider {
     protected Compiler<CppCompileSpec> createCppCompiler() {
         GccCommandLineToolConfigurationInternal cppCompilerTool = toolRegistry.getTool(ToolType.CPP_COMPILER);
         CppCompiler compiler = new CppCompiler(compilerOutputFileNamingSchemeFactory, context(cppCompilerTool), getObjectFileExtension(), useCommandFile);
-        File compilerExe = commandLineTool(cppCompilerTool);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, cppCompilerTool.getToolType().getToolName(), compilerExe, NativeCompilerFactory.CPreprocessorDialect.Gcc, getObjectFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.Gcc, getObjectFileExtension());
     }
 
     @Override
     protected Compiler<CppPCHCompileSpec> createCppPCHCompiler() {
         GccCommandLineToolConfigurationInternal cppCompilerTool = toolRegistry.getTool(ToolType.CPP_COMPILER);
         CppPCHCompiler compiler = new CppPCHCompiler(compilerOutputFileNamingSchemeFactory, context(cppCompilerTool), getPCHFileExtension(), useCommandFile);
-        File compilerExe = commandLineTool(cppCompilerTool);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, cppCompilerTool.getToolType().getToolName(), compilerExe, NativeCompilerFactory.CPreprocessorDialect.Gcc, getPCHFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.Gcc, getPCHFileExtension());
     }
 
     @Override
     protected Compiler<CCompileSpec> createCCompiler() {
         GccCommandLineToolConfigurationInternal cCompilerTool = toolRegistry.getTool(ToolType.C_COMPILER);
         CCompiler compiler = new CCompiler(compilerOutputFileNamingSchemeFactory, context(cCompilerTool), getObjectFileExtension(), useCommandFile);
-        File compilerExe = commandLineTool(cCompilerTool);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, cCompilerTool.getToolType().getToolName(), compilerExe, NativeCompilerFactory.CPreprocessorDialect.Gcc, getObjectFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.Gcc, getObjectFileExtension());
     }
 
     @Override
     protected Compiler<CPCHCompileSpec> createCPCHCompiler() {
         GccCommandLineToolConfigurationInternal cCompilerTool = toolRegistry.getTool(ToolType.C_COMPILER);
         CPCHCompiler compiler = new CPCHCompiler(compilerOutputFileNamingSchemeFactory, context(cCompilerTool), getPCHFileExtension(), useCommandFile);
-        File compilerExe = commandLineTool(cCompilerTool);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, cCompilerTool.getToolType().getToolName(), compilerExe, NativeCompilerFactory.CPreprocessorDialect.Gcc, getPCHFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.Gcc, getPCHFileExtension());
     }
 
     @Override
     protected Compiler<ObjectiveCppCompileSpec> createObjectiveCppCompiler() {
         GccCommandLineToolConfigurationInternal objectiveCppCompilerTool = toolRegistry.getTool(ToolType.OBJECTIVECPP_COMPILER);
         ObjectiveCppCompiler compiler = new ObjectiveCppCompiler(compilerOutputFileNamingSchemeFactory, context(objectiveCppCompilerTool), getObjectFileExtension(), useCommandFile);
-        File compilerExe = commandLineTool(objectiveCppCompilerTool);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, objectiveCppCompilerTool.getToolType().getToolName(), compilerExe, NativeCompilerFactory.CPreprocessorDialect.Gcc, getObjectFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.Gcc, getObjectFileExtension());
     }
 
     @Override
     protected Compiler<ObjectiveCppPCHCompileSpec> createObjectiveCppPCHCompiler() {
         GccCommandLineToolConfigurationInternal objectiveCppCompilerTool = toolRegistry.getTool(ToolType.OBJECTIVECPP_COMPILER);
         ObjectiveCppPCHCompiler compiler = new ObjectiveCppPCHCompiler(compilerOutputFileNamingSchemeFactory, context(objectiveCppCompilerTool), getPCHFileExtension(), useCommandFile);
-        File compilerExe = commandLineTool(objectiveCppCompilerTool);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, objectiveCppCompilerTool.getToolType().getToolName(), compilerExe, NativeCompilerFactory.CPreprocessorDialect.Gcc, getPCHFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.Gcc, getPCHFileExtension());
     }
 
     @Override
     protected Compiler<ObjectiveCCompileSpec> createObjectiveCCompiler() {
         GccCommandLineToolConfigurationInternal objectiveCCompilerTool = toolRegistry.getTool(ToolType.OBJECTIVEC_COMPILER);
         ObjectiveCCompiler compiler = new ObjectiveCCompiler(compilerOutputFileNamingSchemeFactory, context(objectiveCCompilerTool), getObjectFileExtension(), useCommandFile);
-        File compilerExe = commandLineTool(objectiveCCompilerTool);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, objectiveCCompilerTool.getToolType().getToolName(), compilerExe, NativeCompilerFactory.CPreprocessorDialect.Gcc, getObjectFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.Gcc, getObjectFileExtension());
     }
 
     @Override
     protected Compiler<ObjectiveCPCHCompileSpec> createObjectiveCPCHCompiler() {
         GccCommandLineToolConfigurationInternal objectiveCCompilerTool = toolRegistry.getTool(ToolType.OBJECTIVEC_COMPILER);
         ObjectiveCPCHCompiler compiler = new ObjectiveCPCHCompiler(compilerOutputFileNamingSchemeFactory, context(objectiveCCompilerTool), getPCHFileExtension(), useCommandFile);
-        File compilerExe = commandLineTool(objectiveCCompilerTool);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, objectiveCCompilerTool.getToolType().getToolName(), compilerExe, NativeCompilerFactory.CPreprocessorDialect.Gcc, getPCHFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.Gcc, getPCHFileExtension());
     }
 
     @Override
@@ -126,34 +118,28 @@ class GccPlatformToolProvider extends AbstractPlatformToolProvider {
         GccCommandLineToolConfigurationInternal assemblerTool = toolRegistry.getTool(ToolType.ASSEMBLER);
         // Disable command line file for now because some custom assemblers don't understand the same arguments as GCC.
         Assembler assembler = new Assembler(compilerOutputFileNamingSchemeFactory, context(assemblerTool), getObjectFileExtension(), false);
-        File assemblerExe = commandLineTool(assemblerTool);
-        return compilerFactory.compiler(assembler, assemblerTool.getToolType().getToolName(), assemblerExe);
+        return compilerFactory.compiler(assembler);
     }
 
     @Override
     protected Compiler<LinkerSpec> createLinker() {
         GccCommandLineToolConfigurationInternal linkerTool = toolRegistry.getTool(ToolType.LINKER);
         GccLinker linker = new GccLinker(context(linkerTool), useCommandFile);
-        File linkerExe = commandLineTool(linkerTool);
-        return compilerFactory.compiler(linker, linkerTool.getToolType().getToolName(), linkerExe);
+        return compilerFactory.compiler(linker);
     }
 
     @Override
     protected Compiler<StaticLibraryArchiverSpec> createStaticLibraryArchiver() {
         GccCommandLineToolConfigurationInternal staticLibArchiverTool = toolRegistry.getTool(ToolType.STATIC_LIB_ARCHIVER);
         ArStaticLibraryArchiver archiver = new ArStaticLibraryArchiver(context(staticLibArchiverTool));
-        File archiverExe = commandLineTool(staticLibArchiverTool);
-        return compilerFactory.compiler(archiver, staticLibArchiverTool.getToolType().getToolName(), archiverExe);
-    }
-
-    private File commandLineTool(GccCommandLineToolConfigurationInternal tool) {
-        ToolType key = tool.getToolType();
-        String exeName = tool.getExecutable();
-        return toolSearchPath.locate(key, exeName).getTool();
+        return compilerFactory.compiler(archiver);
     }
 
     private CommandLineToolContext context(GccCommandLineToolConfigurationInternal toolConfiguration) {
-        MutableCommandLineToolContext baseInvocation = new DefaultMutableCommandLineToolContext();
+        ToolType key = toolConfiguration.getToolType();
+        String exeName = toolConfiguration.getExecutable();
+        File toolExe = toolSearchPath.locate(key, exeName).getTool();
+        MutableCommandLineToolContext baseInvocation = new DefaultMutableCommandLineToolContext(key.getToolName(), toolExe);
         // MinGW requires the path to be set
         baseInvocation.addPath(toolSearchPath.getPath());
         baseInvocation.addEnvironmentVar("CYGWIN", "nodosfilewarning");

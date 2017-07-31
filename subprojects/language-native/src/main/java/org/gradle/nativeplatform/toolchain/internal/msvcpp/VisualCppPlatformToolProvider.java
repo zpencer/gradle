@@ -74,36 +74,36 @@ class VisualCppPlatformToolProvider extends AbstractPlatformToolProvider {
     @Override
     protected Compiler<CppCompileSpec> createCppCompiler() {
         File compilerExe = visualCpp.getCompiler(targetPlatform);
-        CppCompiler compiler = new CppCompiler(compilerOutputFileNamingSchemeFactory, context(commandLineToolConfigurations.get(ToolType.CPP_COMPILER)), addIncludePathAndDefinitions(CppCompileSpec.class), getObjectFileExtension(), true);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, "C++ compiler", compilerExe, NativeCompilerFactory.CPreprocessorDialect.StandardC, getObjectFileExtension());
+        CppCompiler compiler = new CppCompiler(compilerOutputFileNamingSchemeFactory, context("C++ compiler", compilerExe, commandLineToolConfigurations.get(ToolType.CPP_COMPILER)), addIncludePathAndDefinitions(CppCompileSpec.class), getObjectFileExtension(), true);
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.StandardC, getObjectFileExtension());
     }
 
     @Override
     protected Compiler<CppPCHCompileSpec> createCppPCHCompiler() {
         File compilerExe = visualCpp.getCompiler(targetPlatform);
-        CppPCHCompiler compiler = new CppPCHCompiler(compilerOutputFileNamingSchemeFactory, context(commandLineToolConfigurations.get(ToolType.CPP_COMPILER)), pchSpecTransforms(CppPCHCompileSpec.class), getPCHFileExtension(), true);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, "C++ PCH compiler", compilerExe, NativeCompilerFactory.CPreprocessorDialect.StandardC, getPCHFileExtension());
+        CppPCHCompiler compiler = new CppPCHCompiler(compilerOutputFileNamingSchemeFactory, context("C++ PCH compiler", compilerExe, commandLineToolConfigurations.get(ToolType.CPP_COMPILER)), pchSpecTransforms(CppPCHCompileSpec.class), getPCHFileExtension(), true);
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.StandardC, getPCHFileExtension());
     }
 
     @Override
     protected Compiler<CCompileSpec> createCCompiler() {
         File compilerExe = visualCpp.getCompiler(targetPlatform);
-        CCompiler compiler = new CCompiler(compilerOutputFileNamingSchemeFactory, context(commandLineToolConfigurations.get(ToolType.C_COMPILER)), addIncludePathAndDefinitions(CCompileSpec.class), getObjectFileExtension(), true);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, "C compiler", compilerExe, NativeCompilerFactory.CPreprocessorDialect.StandardC, getObjectFileExtension());
+        CCompiler compiler = new CCompiler(compilerOutputFileNamingSchemeFactory, context("C compiler", compilerExe, commandLineToolConfigurations.get(ToolType.C_COMPILER)), addIncludePathAndDefinitions(CCompileSpec.class), getObjectFileExtension(), true);
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.StandardC, getObjectFileExtension());
     }
 
     @Override
     protected Compiler<CPCHCompileSpec> createCPCHCompiler() {
         File compilerExe = visualCpp.getCompiler(targetPlatform);
-        CPCHCompiler compiler = new CPCHCompiler(compilerOutputFileNamingSchemeFactory, context(commandLineToolConfigurations.get(ToolType.C_COMPILER)), pchSpecTransforms(CPCHCompileSpec.class), getPCHFileExtension(), true);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, "C PCH compiler", compilerExe, NativeCompilerFactory.CPreprocessorDialect.StandardC, getPCHFileExtension());
+        CPCHCompiler compiler = new CPCHCompiler(compilerOutputFileNamingSchemeFactory, context("C PCH compiler", compilerExe, commandLineToolConfigurations.get(ToolType.C_COMPILER)), pchSpecTransforms(CPCHCompileSpec.class), getPCHFileExtension(), true);
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.StandardC, getPCHFileExtension());
     }
 
     @Override
     protected Compiler<AssembleSpec> createAssembler() {
         File assemblerExe = visualCpp.getAssembler(targetPlatform);
-        Assembler assembler = new Assembler(compilerOutputFileNamingSchemeFactory, context(commandLineToolConfigurations.get(ToolType.ASSEMBLER)), addIncludePathAndDefinitions(AssembleSpec.class), getObjectFileExtension(), false);
-        return compilerFactory.compiler(assembler, ToolType.ASSEMBLER.getToolName(), assemblerExe);
+        Assembler assembler = new Assembler(compilerOutputFileNamingSchemeFactory, context(ToolType.ASSEMBLER.getToolName(), assemblerExe, commandLineToolConfigurations.get(ToolType.ASSEMBLER)), addIncludePathAndDefinitions(AssembleSpec.class), getObjectFileExtension(), false);
+        return compilerFactory.compiler(assembler);
     }
 
     @Override
@@ -120,26 +120,26 @@ class VisualCppPlatformToolProvider extends AbstractPlatformToolProvider {
     protected Compiler<WindowsResourceCompileSpec> createWindowsResourceCompiler() {
         File resourceCompilerExe = sdk.getResourceCompiler(targetPlatform);
         String objectFileExtension = ".res";
-        WindowsResourceCompiler compiler = new WindowsResourceCompiler(compilerOutputFileNamingSchemeFactory, context(commandLineToolConfigurations.get(ToolType.WINDOW_RESOURCES_COMPILER)), addIncludePathAndDefinitions(WindowsResourceCompileSpec.class), objectFileExtension, false);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, "Windows resource compiler", resourceCompilerExe, NativeCompilerFactory.CPreprocessorDialect.StandardC, objectFileExtension);
+        WindowsResourceCompiler compiler = new WindowsResourceCompiler(compilerOutputFileNamingSchemeFactory, context("Windows resource compiler", resourceCompilerExe, commandLineToolConfigurations.get(ToolType.WINDOW_RESOURCES_COMPILER)), addIncludePathAndDefinitions(WindowsResourceCompileSpec.class), objectFileExtension, false);
+        return compilerFactory.incrementalAndParallelCompiler(compiler, NativeCompilerFactory.CPreprocessorDialect.StandardC, objectFileExtension);
     }
 
     @Override
     protected Compiler<LinkerSpec> createLinker() {
         File linkerExe = visualCpp.getLinker(targetPlatform);
-        LinkExeLinker linker = new LinkExeLinker(context(commandLineToolConfigurations.get(ToolType.LINKER)), addLibraryPath());
-        return compilerFactory.compiler(linker, ToolType.LINKER.getToolName(), linkerExe);
+        LinkExeLinker linker = new LinkExeLinker(context(ToolType.LINKER.getToolName(), linkerExe, commandLineToolConfigurations.get(ToolType.LINKER)), addLibraryPath());
+        return compilerFactory.compiler(linker);
     }
 
     @Override
     protected Compiler<StaticLibraryArchiverSpec> createStaticLibraryArchiver() {
         File archiverExe = visualCpp.getArchiver(targetPlatform);
-        LibExeStaticLibraryArchiver archiver = new LibExeStaticLibraryArchiver(context(commandLineToolConfigurations.get(ToolType.STATIC_LIB_ARCHIVER)), Transformers.<StaticLibraryArchiverSpec>noOpTransformer());
-        return compilerFactory.compiler(archiver, ToolType.STATIC_LIB_ARCHIVER.getToolName(), archiverExe);
+        LibExeStaticLibraryArchiver archiver = new LibExeStaticLibraryArchiver(context(ToolType.STATIC_LIB_ARCHIVER.getToolName(), archiverExe, commandLineToolConfigurations.get(ToolType.STATIC_LIB_ARCHIVER)), Transformers.<StaticLibraryArchiverSpec>noOpTransformer());
+        return compilerFactory.compiler(archiver);
     }
 
-    private CommandLineToolContext context(CommandLineToolConfigurationInternal commandLineToolConfiguration) {
-        MutableCommandLineToolContext invocationContext = new DefaultMutableCommandLineToolContext();
+    private CommandLineToolContext context(String toolName, File executable, CommandLineToolConfigurationInternal commandLineToolConfiguration) {
+         MutableCommandLineToolContext invocationContext = new DefaultMutableCommandLineToolContext(toolName, executable);
         // The visual C++ tools use the path to find other executables
         // TODO:ADAM - restrict this to the specific path for the target tool
         invocationContext.addPath(visualCpp.getPath(targetPlatform));

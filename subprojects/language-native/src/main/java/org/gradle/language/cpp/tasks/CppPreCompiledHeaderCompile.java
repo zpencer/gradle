@@ -16,6 +16,7 @@
 
 package org.gradle.language.cpp.tasks;
 
+import org.gradle.api.Incubating;
 import org.gradle.language.cpp.internal.DefaultCppPCHCompileSpec;
 import org.gradle.language.nativeplatform.tasks.AbstractNativePCHCompileTask;
 import org.gradle.nativeplatform.toolchain.internal.NativeCompileSpec;
@@ -23,6 +24,7 @@ import org.gradle.nativeplatform.toolchain.internal.NativeCompileSpec;
 /**
  * Compiles C++ header source files into object files.
  */
+@Incubating
 public class CppPreCompiledHeaderCompile extends AbstractNativePCHCompileTask {
     @Override
     protected NativeCompileSpec createCompileSpec() {

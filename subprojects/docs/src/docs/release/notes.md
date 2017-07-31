@@ -78,6 +78,15 @@ These methods where not meant to be used, since Gradle does not allow to customi
 
 As observed by many users the FindBugs plugin renders a lot of progress information by default leading to longer, unmanageable logs. The output behavior changes with this release. By default the FindBugs plugin will render no more analysis progress. If you happen to post-process the output and relied on the pre-4.2 behavior, then you can enable the progressing logging with the property `FindBugsExtension.showProgress`.
 
+### Add missing `@Incubating` annotation to pre-compiled header task types
+
+The following types were missing an `@Incubating` annotation: 
+
+- `CPreCompiledHeaderCompile`
+- `CppPreCompiledHeaderCompile`
+- `ObjectiveCPreCompiledHeaderCompile`
+- `ObjectiveCppPreCompiledHeaderCompile`
+
 ## External contributions
 
 We would like to thank the following community members for making contributions to this release of Gradle.

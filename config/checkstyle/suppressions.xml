@@ -45,6 +45,8 @@
     <suppress checks="JavadocPackage"
               files=".*[/\\]subprojects[/\\]testing-jvm[/\\]src[/\\]main[/\\]java[/\\]org[/\\]gradle[/\\]api[/\\]tasks[/\\]testing[/\\][^/\\]+"/>
     <suppress checks="JavadocPackage"
+              files=".*[/\\]subprojects[/\\]language-native[/\\]src[/\\]main[/\\]java[/\\]org[/\\]gradle[/\\]nativeplatform[/\\]plugins[/\\][^/\\]+"/>
+    <suppress checks="JavadocPackage"
               files=".*[/\\]subprojects[/\\]build-comparison[/\\]src[/\\]main[/\\]groovy[/\\]org[/\\]gradle[/\\]api[/\\]plugins[/\\]buildcomparison[/\\]gradle[/\\][^/\\]+"/>
 
     <!-- Don't require api docs for projects only used internally -->

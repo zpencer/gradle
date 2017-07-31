@@ -16,6 +16,7 @@
 
 package org.gradle.language.nativeplatform.internal;
 
+import org.gradle.api.internal.TaskOutputsInternal;
 import org.gradle.api.internal.changedetection.changes.DiscoveredInputRecorder;
 import org.gradle.internal.operations.logging.BuildOperationLogger;
 import org.gradle.nativeplatform.internal.AbstractBinaryToolSpec;
@@ -39,6 +40,8 @@ public abstract class AbstractNativeCompileSpec extends AbstractBinaryToolSpec i
     private Map<File, IncludeDirectives> sourceFileIncludeDirectives;
     private String preCompiledHeader;
     private DiscoveredInputRecorder discoveredInputRecorder;
+    private String taskPath;
+    private TaskOutputsInternal taskOutputs;
 
     @Override
     public List<File> getIncludeRoots() {
@@ -201,5 +204,25 @@ public abstract class AbstractNativeCompileSpec extends AbstractBinaryToolSpec i
     @Override
     public DiscoveredInputRecorder getDiscoveredInputRecorder() {
         return discoveredInputRecorder;
+    }
+
+    @Override
+    public String getTaskPath() {
+        return taskPath;
+    }
+
+    @Override
+    public void setTaskPath(String taskPath) {
+        this.taskPath = taskPath;
+    }
+
+    @Override
+    public TaskOutputsInternal getTaskOutputs() {
+        return taskOutputs;
+    }
+
+    @Override
+    public void setTaskOutputs(TaskOutputsInternal taskOutputs) {
+        this.taskOutputs = taskOutputs;
     }
 }

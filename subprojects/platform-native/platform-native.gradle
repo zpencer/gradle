@@ -21,6 +21,9 @@ dependencies {
     compile project(':platformBase')
     compile project(':diagnostics')
 
+    // TODO - remove this cycle
+    testRuntime project(':languageNative')
+
     integTestRuntime project(':maven')
     // Required to test visual studio project file generation for generated sources
     integTestRuntime project(':ideNative')

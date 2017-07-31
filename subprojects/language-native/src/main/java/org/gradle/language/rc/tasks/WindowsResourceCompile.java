@@ -33,7 +33,6 @@ import org.gradle.internal.operations.logging.BuildOperationLogger;
 import org.gradle.internal.operations.logging.BuildOperationLoggerFactory;
 import org.gradle.language.base.internal.compile.Compiler;
 import org.gradle.language.base.internal.compile.CompilerUtil;
-import org.gradle.language.nativeplatform.internal.incremental.IncrementalCompilerBuilder;
 import org.gradle.language.rc.internal.DefaultWindowsResourceCompileSpec;
 import org.gradle.nativeplatform.internal.BuildOperationLoggingCompilerDecorator;
 import org.gradle.nativeplatform.platform.NativePlatform;
@@ -77,11 +76,6 @@ public class WindowsResourceCompile extends DefaultTask {
     }
 
     @Inject
-    public IncrementalCompilerBuilder getIncrementalCompilerBuilder() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Inject
     public BuildOperationLoggerFactory getOperationLoggerFactory() {
         throw new UnsupportedOperationException();
     }
@@ -99,6 +93,8 @@ public class WindowsResourceCompile extends DefaultTask {
         spec.args(getCompilerArgs());
         spec.setIncrementalCompile(inputs.isIncremental());
         spec.setDiscoveredInputRecorder((DiscoveredInputRecorder) inputs);
+        spec.setTaskPath(getPath());
+        spec.setTaskOutputs(getOutputs());
         spec.setOperationLogger(operationLogger);
 
         PlatformToolProvider platformToolProvider = toolChain.select(targetPlatform);
@@ -109,8 +105,7 @@ public class WindowsResourceCompile extends DefaultTask {
     private <T extends NativeCompileSpec> WorkResult doCompile(T spec, PlatformToolProvider platformToolProvider) {
         Class<T> specType = Cast.uncheckedCast(spec.getClass());
         Compiler<T> baseCompiler = platformToolProvider.newCompiler(specType);
-        Compiler<T> incrementalCompiler = getIncrementalCompilerBuilder().createIncrementalCompiler(this, baseCompiler, toolChain);
-        Compiler<T> loggingCompiler = BuildOperationLoggingCompilerDecorator.wrap(incrementalCompiler);
+        Compiler<T> loggingCompiler = BuildOperationLoggingCompilerDecorator.wrap(baseCompiler);
         return CompilerUtil.castCompiler(loggingCompiler).execute(spec);
     }
 

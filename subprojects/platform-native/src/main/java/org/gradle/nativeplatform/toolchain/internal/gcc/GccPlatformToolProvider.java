@@ -64,56 +64,56 @@ class GccPlatformToolProvider extends AbstractPlatformToolProvider {
     protected Compiler<CppCompileSpec> createCppCompiler() {
         GccCommandLineToolConfigurationInternal cppCompilerTool = toolRegistry.getTool(ToolType.CPP_COMPILER);
         CppCompiler compiler = new CppCompiler(compilerOutputFileNamingSchemeFactory, context(cppCompilerTool), getObjectFileExtension(), useCommandFile);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(cppCompilerTool), compilerOutputFileNamingSchemeFactory, getObjectFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(cppCompilerTool), compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.Gcc, getObjectFileExtension());
     }
 
     @Override
     protected Compiler<CppPCHCompileSpec> createCppPCHCompiler() {
         GccCommandLineToolConfigurationInternal cppCompilerTool = toolRegistry.getTool(ToolType.CPP_COMPILER);
         CppPCHCompiler compiler = new CppPCHCompiler(compilerOutputFileNamingSchemeFactory, context(cppCompilerTool), getPCHFileExtension(), useCommandFile);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(cppCompilerTool), compilerOutputFileNamingSchemeFactory, getPCHFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(cppCompilerTool), compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.Gcc, getPCHFileExtension());
     }
 
     @Override
     protected Compiler<CCompileSpec> createCCompiler() {
         GccCommandLineToolConfigurationInternal cCompilerTool = toolRegistry.getTool(ToolType.C_COMPILER);
         CCompiler compiler = new CCompiler(compilerOutputFileNamingSchemeFactory, context(cCompilerTool), getObjectFileExtension(), useCommandFile);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(cCompilerTool), compilerOutputFileNamingSchemeFactory, getObjectFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(cCompilerTool), compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.Gcc, getObjectFileExtension());
     }
 
     @Override
     protected Compiler<CPCHCompileSpec> createCPCHCompiler() {
         GccCommandLineToolConfigurationInternal cCompilerTool = toolRegistry.getTool(ToolType.C_COMPILER);
         CPCHCompiler compiler = new CPCHCompiler(compilerOutputFileNamingSchemeFactory, context(cCompilerTool), getPCHFileExtension(), useCommandFile);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(cCompilerTool), compilerOutputFileNamingSchemeFactory, getPCHFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(cCompilerTool), compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.Gcc, getPCHFileExtension());
     }
 
     @Override
     protected Compiler<ObjectiveCppCompileSpec> createObjectiveCppCompiler() {
         GccCommandLineToolConfigurationInternal objectiveCppCompilerTool = toolRegistry.getTool(ToolType.OBJECTIVECPP_COMPILER);
         ObjectiveCppCompiler compiler = new ObjectiveCppCompiler(compilerOutputFileNamingSchemeFactory, context(objectiveCppCompilerTool), getObjectFileExtension(), useCommandFile);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(objectiveCppCompilerTool), compilerOutputFileNamingSchemeFactory, getObjectFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(objectiveCppCompilerTool), compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.Gcc, getObjectFileExtension());
     }
 
     @Override
     protected Compiler<ObjectiveCppPCHCompileSpec> createObjectiveCppPCHCompiler() {
         GccCommandLineToolConfigurationInternal objectiveCppCompilerTool = toolRegistry.getTool(ToolType.OBJECTIVECPP_COMPILER);
         ObjectiveCppPCHCompiler compiler = new ObjectiveCppPCHCompiler(compilerOutputFileNamingSchemeFactory, context(objectiveCppCompilerTool), getPCHFileExtension(), useCommandFile);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(objectiveCppCompilerTool), compilerOutputFileNamingSchemeFactory, getPCHFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(objectiveCppCompilerTool), compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.Gcc, getPCHFileExtension());
     }
 
     @Override
     protected Compiler<ObjectiveCCompileSpec> createObjectiveCCompiler() {
         GccCommandLineToolConfigurationInternal objectiveCCompilerTool = toolRegistry.getTool(ToolType.OBJECTIVEC_COMPILER);
         ObjectiveCCompiler compiler = new ObjectiveCCompiler(compilerOutputFileNamingSchemeFactory, context(objectiveCCompilerTool), getObjectFileExtension(), useCommandFile);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(objectiveCCompilerTool), compilerOutputFileNamingSchemeFactory, getObjectFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(objectiveCCompilerTool), compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.Gcc, getObjectFileExtension());
     }
 
     @Override
     protected Compiler<ObjectiveCPCHCompileSpec> createObjectiveCPCHCompiler() {
         GccCommandLineToolConfigurationInternal objectiveCCompilerTool = toolRegistry.getTool(ToolType.OBJECTIVEC_COMPILER);
         ObjectiveCPCHCompiler compiler = new ObjectiveCPCHCompiler(compilerOutputFileNamingSchemeFactory, context(objectiveCCompilerTool), getPCHFileExtension(), useCommandFile);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(objectiveCCompilerTool), compilerOutputFileNamingSchemeFactory, getPCHFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool(objectiveCCompilerTool), compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.Gcc, getPCHFileExtension());
     }
 
     @Override

@@ -20,7 +20,12 @@ import org.gradle.language.base.internal.compile.Compiler;
 import org.gradle.nativeplatform.internal.BinaryToolSpec;
 import org.gradle.nativeplatform.internal.CompilerOutputFileNamingSchemeFactory;
 
+// TODO - move incremental compile to language project
 public interface NativeCompilerFactory {
+    enum CPreprocessorDialect {
+        StandardC, Gcc
+    }
+
     /**
      * Creates a {@link Compiler} for a compiler that runs one or more command-line tools. The provided compiler implementation is responsible for taking care of incremental compile, if relevant.
      *
@@ -34,5 +39,5 @@ public interface NativeCompilerFactory {
      * @param commandLineToolInvocationWorker Will be removed.
      * @param compilerOutputFileNamingSchemeFactory Will be removed.
      */
-    <T extends NativeCompileSpec> Compiler<T> incrementalAndParallelCompiler(CommandLineToolBackedCompiler<T> compiler, CommandLineToolInvocationWorker commandLineToolInvocationWorker, CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory, String outputFileSuffix);
+    <T extends NativeCompileSpec> Compiler<T> incrementalAndParallelCompiler(CommandLineToolBackedCompiler<T> compiler, CommandLineToolInvocationWorker commandLineToolInvocationWorker, CompilerOutputFileNamingSchemeFactory compilerOutputFileNamingSchemeFactory, CPreprocessorDialect dialect, String outputFileSuffix);
 }

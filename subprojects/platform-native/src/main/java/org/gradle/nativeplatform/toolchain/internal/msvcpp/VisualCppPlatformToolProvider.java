@@ -80,28 +80,28 @@ class VisualCppPlatformToolProvider extends AbstractPlatformToolProvider {
     protected Compiler<CppCompileSpec> createCppCompiler() {
         CommandLineToolInvocationWorker commandLineTool = tool("C++ compiler", visualCpp.getCompiler(targetPlatform));
         CppCompiler compiler = new CppCompiler(compilerOutputFileNamingSchemeFactory, context(commandLineToolConfigurations.get(ToolType.CPP_COMPILER)), addIncludePathAndDefinitions(CppCompileSpec.class), getObjectFileExtension(), true);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool, compilerOutputFileNamingSchemeFactory, getObjectFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool, compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.StandardC, getObjectFileExtension());
     }
 
     @Override
     protected Compiler<CppPCHCompileSpec> createCppPCHCompiler() {
         CommandLineToolInvocationWorker commandLineTool = tool("C++ PCH compiler", visualCpp.getCompiler(targetPlatform));
         CppPCHCompiler compiler = new CppPCHCompiler(compilerOutputFileNamingSchemeFactory, context(commandLineToolConfigurations.get(ToolType.CPP_COMPILER)), pchSpecTransforms(CppPCHCompileSpec.class), getPCHFileExtension(), true);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool, compilerOutputFileNamingSchemeFactory, getPCHFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool, compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.StandardC, getPCHFileExtension());
     }
 
     @Override
     protected Compiler<CCompileSpec> createCCompiler() {
         CommandLineToolInvocationWorker commandLineTool = tool("C compiler", visualCpp.getCompiler(targetPlatform));
         CCompiler compiler = new CCompiler(compilerOutputFileNamingSchemeFactory, context(commandLineToolConfigurations.get(ToolType.C_COMPILER)), addIncludePathAndDefinitions(CCompileSpec.class), getObjectFileExtension(), true);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool, compilerOutputFileNamingSchemeFactory, getObjectFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool, compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.StandardC, getObjectFileExtension());
     }
 
     @Override
     protected Compiler<CPCHCompileSpec> createCPCHCompiler() {
         CommandLineToolInvocationWorker commandLineTool = tool("C PCH compiler", visualCpp.getCompiler(targetPlatform));
         CPCHCompiler compiler = new CPCHCompiler(compilerOutputFileNamingSchemeFactory, context(commandLineToolConfigurations.get(ToolType.C_COMPILER)), pchSpecTransforms(CPCHCompileSpec.class), getPCHFileExtension(), true);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool, compilerOutputFileNamingSchemeFactory, getPCHFileExtension());
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool, compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.StandardC, getPCHFileExtension());
     }
 
     @Override
@@ -126,7 +126,7 @@ class VisualCppPlatformToolProvider extends AbstractPlatformToolProvider {
         CommandLineToolInvocationWorker commandLineTool = tool("Windows resource compiler", sdk.getResourceCompiler(targetPlatform));
         String objectFileExtension = ".res";
         WindowsResourceCompiler compiler = new WindowsResourceCompiler(compilerOutputFileNamingSchemeFactory, context(commandLineToolConfigurations.get(ToolType.WINDOW_RESOURCES_COMPILER)), addIncludePathAndDefinitions(WindowsResourceCompileSpec.class), objectFileExtension, false);
-        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool, compilerOutputFileNamingSchemeFactory, objectFileExtension);
+        return compilerFactory.incrementalAndParallelCompiler(compiler, commandLineTool, compilerOutputFileNamingSchemeFactory, NativeCompilerFactory.CPreprocessorDialect.StandardC, objectFileExtension);
     }
 
     @Override

@@ -18,7 +18,6 @@ package org.gradle.language.nativeplatform.internal.incremental;
 import org.gradle.api.Transformer;
 import org.gradle.api.file.EmptyFileVisitor;
 import org.gradle.api.file.FileVisitDetails;
-import org.gradle.api.internal.TaskInternal;
 import org.gradle.api.internal.changedetection.changes.DiscoveredInputRecorder;
 import org.gradle.api.internal.file.collections.DirectoryFileTreeFactory;
 import org.gradle.api.internal.hash.FileHasher;
@@ -33,10 +32,8 @@ import org.gradle.language.base.internal.tasks.SimpleStaleClassCleaner;
 import org.gradle.language.nativeplatform.internal.IncludeDirectives;
 import org.gradle.language.nativeplatform.internal.incremental.sourceparser.CSourceParser;
 import org.gradle.language.nativeplatform.internal.incremental.sourceparser.RegexBackedCSourceParser;
-import org.gradle.nativeplatform.toolchain.Clang;
-import org.gradle.nativeplatform.toolchain.Gcc;
-import org.gradle.nativeplatform.toolchain.NativeToolChain;
 import org.gradle.nativeplatform.toolchain.internal.NativeCompileSpec;
+import org.gradle.nativeplatform.toolchain.internal.NativeCompilerFactory;
 import org.gradle.util.CollectionUtils;
 
 import java.io.File;
@@ -47,25 +44,23 @@ public class IncrementalNativeCompiler<T extends NativeCompileSpec> implements C
     private static final Logger LOGGER = Logging.getLogger(IncrementalNativeCompiler.class);
     private final Compiler<T> delegateCompiler;
     private final boolean importsAreIncludes;
-    private final TaskInternal task;
     private final FileHasher hasher;
     private final DirectoryFileTreeFactory directoryFileTreeFactory;
     private final CompilationStateCacheFactory compilationStateCacheFactory;
 
     private final CSourceParser sourceParser = new RegexBackedCSourceParser();
 
-    public IncrementalNativeCompiler(TaskInternal task, FileHasher hasher, CompilationStateCacheFactory compilationStateCacheFactory, Compiler<T> delegateCompiler, NativeToolChain toolChain, DirectoryFileTreeFactory directoryFileTreeFactory) {
-        this.task = task;
+    public IncrementalNativeCompiler(FileHasher hasher, CompilationStateCacheFactory compilationStateCacheFactory, Compiler<T> delegateCompiler, NativeCompilerFactory.CPreprocessorDialect dialect, DirectoryFileTreeFactory directoryFileTreeFactory) {
         this.hasher = hasher;
         this.compilationStateCacheFactory = compilationStateCacheFactory;
         this.delegateCompiler = delegateCompiler;
         this.directoryFileTreeFactory = directoryFileTreeFactory;
-        this.importsAreIncludes = Clang.class.isAssignableFrom(toolChain.getClass()) || Gcc.class.isAssignableFrom(toolChain.getClass());
+        this.importsAreIncludes = dialect == NativeCompilerFactory.CPreprocessorDialect.Gcc;
     }
 
     @Override
     public WorkResult execute(final T spec) {
-        PersistentStateCache<CompilationState> compileStateCache = compilationStateCacheFactory.create(task.getPath());
+        PersistentStateCache<CompilationState> compileStateCache = compilationStateCacheFactory.create(spec.getTaskPath());
         DefaultSourceIncludesParser sourceIncludesParser = new DefaultSourceIncludesParser(sourceParser, importsAreIncludes);
         IncrementalCompileProcessor processor = createProcessor(compileStateCache, sourceIncludesParser, spec.getIncludeRoots());
         IncrementalCompilation compilation = processor.processSourceFiles(spec.getSourceFiles());
@@ -92,9 +87,9 @@ public class IncrementalNativeCompiler<T extends NativeCompileSpec> implements C
         }
 
         if (sourceFilesUseMacroIncludes(spec.getSourceFiles(), compilation.getFinalState())) {
-            LOGGER.info("After parsing the source files, Gradle cannot calculate the exact set of include files for {}. Every file in the include search path will be considered an input.", task.getName());
+            LOGGER.info("After parsing the source files, Gradle cannot calculate the exact set of include files for {}. Every file in the include search path will be considered an input.", spec.getTaskPath());
             for (final File includeRoot : spec.getIncludeRoots()) {
-                LOGGER.info("adding files in {} to discovered inputs for {}", includeRoot, task.getName());
+                LOGGER.info("adding files in {} to discovered inputs for {}", includeRoot, spec.getTaskPath());
                 directoryFileTreeFactory.create(includeRoot).visit(new EmptyFileVisitor() {
                     @Override
                     public void visitFile(FileVisitDetails fileDetails) {
@@ -148,14 +143,10 @@ public class IncrementalNativeCompiler<T extends NativeCompileSpec> implements C
     }
 
     private boolean cleanPreviousOutputs(NativeCompileSpec spec) {
-        SimpleStaleClassCleaner cleaner = new SimpleStaleClassCleaner(getTask().getOutputs());
+        SimpleStaleClassCleaner cleaner = new SimpleStaleClassCleaner(spec.getTaskOutputs());
         cleaner.setDestinationDir(spec.getObjectFileDir());
         cleaner.execute();
         return cleaner.getDidWork();
-    }
-
-    protected TaskInternal getTask() {
-        return task;
     }
 
     private IncrementalCompileProcessor createProcessor(PersistentStateCache<CompilationState> compileStateCache, SourceIncludesParser sourceIncludesParser, Iterable<File> includes) {

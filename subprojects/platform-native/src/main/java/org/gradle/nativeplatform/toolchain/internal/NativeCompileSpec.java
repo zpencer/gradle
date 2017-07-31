@@ -16,6 +16,7 @@
 
 package org.gradle.nativeplatform.toolchain.internal;
 
+import org.gradle.api.internal.TaskOutputsInternal;
 import org.gradle.api.internal.changedetection.changes.DiscoveredInputRecorder;
 import org.gradle.language.nativeplatform.internal.IncludeDirectives;
 import org.gradle.nativeplatform.internal.BinaryToolSpec;
@@ -86,4 +87,12 @@ public interface NativeCompileSpec extends BinaryToolSpec {
     DiscoveredInputRecorder getDiscoveredInputRecorder();
 
     void setDiscoveredInputRecorder(DiscoveredInputRecorder inputs);
+
+    TaskOutputsInternal getTaskOutputs();
+
+    void setTaskOutputs(TaskOutputsInternal outputs);
+
+    String getTaskPath();
+
+    void setTaskPath(String path);
 }

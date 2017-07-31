@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gradle.nativeplatform.toolchain.internal.gcc
+package org.gradle.nativeplatform.toolchain.internal.clang
 
 import org.gradle.api.Action
 import org.gradle.api.internal.file.FileResolver
@@ -25,7 +25,6 @@ import org.gradle.nativeplatform.internal.CompilerOutputFileNamingSchemeFactory
 import org.gradle.nativeplatform.platform.internal.NativePlatformInternal
 import org.gradle.nativeplatform.toolchain.GccPlatformToolChain
 import org.gradle.nativeplatform.toolchain.internal.NativeCompilerFactory
-import org.gradle.nativeplatform.toolchain.internal.clang.ClangToolChain
 import org.gradle.nativeplatform.toolchain.internal.gcc.version.CompilerMetaDataProviderFactory
 import org.gradle.process.internal.ExecActionFactory
 import org.gradle.test.fixtures.file.TestNameTestDirectoryProvider

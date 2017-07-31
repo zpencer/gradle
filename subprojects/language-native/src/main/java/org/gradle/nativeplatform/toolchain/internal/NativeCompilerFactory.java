@@ -20,7 +20,6 @@ import org.gradle.language.base.internal.compile.Compiler;
 import org.gradle.nativeplatform.internal.BinaryToolSpec;
 import org.gradle.nativeplatform.internal.CompilerOutputFileNamingSchemeFactory;
 
-// TODO - move incremental compile to language project
 public interface NativeCompilerFactory {
     enum CPreprocessorDialect {
         StandardC, Gcc

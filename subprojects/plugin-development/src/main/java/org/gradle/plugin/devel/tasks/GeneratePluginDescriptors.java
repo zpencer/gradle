@@ -49,8 +49,9 @@ public class GeneratePluginDescriptors extends ConventionTask {
     @TaskAction
     public void generatePluginDescriptors() {
         clearOutputDirectory();
+        File metaInfPlugins = new File(getOutputDirectory(), "META-INF/gradle-plugins");
         for (PluginDeclaration declaration : getDeclarations()) {
-            File descriptorFile = new File(getOutputDirectory(), declaration.getId() + ".properties");
+            File descriptorFile = new File(metaInfPlugins, declaration.getId() + ".properties");
             Properties properties = new Properties();
             properties.setProperty("implementation-class", declaration.getImplementationClass());
             writePropertiesTo(properties, descriptorFile);

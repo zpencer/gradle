@@ -167,7 +167,7 @@ public interface SourceSetOutput extends FileCollection {
      * @param options - use 'builtBy' key to configure the 'builtBy' task of the dir
      * @param dir - will be resolved as {@link org.gradle.api.Project#file(Object)}
      */
-    void dir(Map<String, Object> options, Object dir);
+    void dir(Map<String, ?> options, Object dir);
 
     /**
      * Registers an extra output dir. Useful for generated resources.

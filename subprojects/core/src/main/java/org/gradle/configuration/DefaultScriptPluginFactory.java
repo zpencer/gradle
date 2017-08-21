@@ -16,10 +16,6 @@
 
 package org.gradle.configuration;
 
-import com.google.common.collect.Lists;
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.initialization.dsl.ScriptHandler;
 import org.gradle.api.internal.DocumentationRegistry;
 import org.gradle.api.internal.GradleInternal;
@@ -55,20 +51,12 @@ import org.gradle.internal.resource.TextResourceLoader;
 import org.gradle.internal.service.DefaultServiceRegistry;
 import org.gradle.model.dsl.internal.transform.ClosureCreationInterceptingVerifier;
 import org.gradle.model.internal.inspect.ModelRuleSourceDetector;
-import org.gradle.plugin.management.internal.DefaultPluginRequest;
-import org.gradle.plugin.management.internal.DefaultPluginRequests;
-import org.gradle.plugin.management.internal.PluginRequestInternal;
 import org.gradle.plugin.management.internal.PluginRequests;
 import org.gradle.plugin.management.internal.PluginRequestsSerializer;
 import org.gradle.plugin.management.internal.PluginRequestsTransformer;
 import org.gradle.plugin.repository.internal.PluginRepositoryFactory;
 import org.gradle.plugin.repository.internal.PluginRepositoryRegistry;
-import org.gradle.plugin.use.PluginId;
-import org.gradle.plugin.use.internal.DefaultPluginId;
 import org.gradle.plugin.use.internal.PluginRequestApplicator;
-import org.gradle.util.CollectionUtils;
-
-import java.util.List;
 
 public class DefaultScriptPluginFactory implements ScriptPluginFactory {
     private final static StringInterner INTERNER = new StringInterner();
@@ -89,7 +77,7 @@ public class DefaultScriptPluginFactory implements ScriptPluginFactory {
     private final ProviderFactory providerFactory;
     private final TextResourceLoader textResourceLoader;
     private final FileHasher fileHasher;
-    private final PluginRequestsTransformer pluginRequestsTransformer = new BuildScanPluginRequestsTransformer();
+    private final PluginRequestsTransformer pluginRequestsTransformer;
     private ScriptPluginFactory scriptPluginFactory;
 
     public DefaultScriptPluginFactory(ScriptCompilerFactory scriptCompilerFactory,
@@ -105,7 +93,8 @@ public class DefaultScriptPluginFactory implements ScriptPluginFactory {
                                       PluginRepositoryFactory pluginRepositoryFactory,
                                       ProviderFactory providerFactory,
                                       TextResourceLoader textResourceLoader,
-                                      FileHasher fileHasher) {
+                                      FileHasher fileHasher,
+                                      PluginRequestsTransformer pluginRequestsTransformer) {
         this.scriptCompilerFactory = scriptCompilerFactory;
         this.loggingManagerFactory = loggingManagerFactory;
         this.instantiator = instantiator;
@@ -121,6 +110,7 @@ public class DefaultScriptPluginFactory implements ScriptPluginFactory {
         this.textResourceLoader = textResourceLoader;
         this.scriptPluginFactory = this;
         this.fileHasher = fileHasher;
+        this.pluginRequestsTransformer = pluginRequestsTransformer;
     }
 
     public void setScriptPluginFactory(ScriptPluginFactory scriptPluginFactory) {
@@ -245,36 +235,6 @@ public class DefaultScriptPluginFactory implements ScriptPluginFactory {
             } else {
                 return new DefaultScriptTarget(target);
             }
-        }
-    }
-
-    private static final class BuildScanPluginRequestsTransformer implements PluginRequestsTransformer {
-        @Override
-        public PluginRequests transformPluginRequests(PluginRequests requests, Object pluginTarget) {
-            if (!(pluginTarget instanceof Project)) {
-                return requests;
-            }
-
-            Configuration classpathConfiguration = ((Project) pluginTarget).getBuildscript().getConfigurations().getByName(ScriptHandler.CLASSPATH_CONFIGURATION);
-            for (Dependency dependency : classpathConfiguration.getDependencies()) {
-                if (dependency.getGroup().equals("com.gradle") && dependency.getName().equals("build-scan-plugin")) {
-                    return requests;
-                }
-            }
-
-            PluginId buildScanPlugin = DefaultPluginId.of("com.gradle.build-scan");
-            for (PluginRequestInternal request : requests) {
-                if (buildScanPlugin.equals(request.getId())) {
-                    // Build scan plugin already requested
-                    return requests;
-                }
-            }
-
-            List<PluginRequestInternal> copyRequests = Lists.newArrayList();
-            DefaultPluginRequest buildScanPluginRequest = new DefaultPluginRequest(buildScanPlugin, "1.1", true, 1, "built-in", null);
-            copyRequests.add(0, buildScanPluginRequest);
-            CollectionUtils.addAll(copyRequests, requests);
-            return new DefaultPluginRequests(copyRequests);
         }
     }
 }

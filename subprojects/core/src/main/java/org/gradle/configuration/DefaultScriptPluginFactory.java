@@ -16,6 +16,10 @@
 
 package org.gradle.configuration;
 
+import com.google.common.collect.Lists;
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.initialization.dsl.ScriptHandler;
 import org.gradle.api.internal.DocumentationRegistry;
 import org.gradle.api.internal.GradleInternal;
@@ -23,7 +27,6 @@ import org.gradle.api.internal.SettingsInternal;
 import org.gradle.api.internal.cache.StringInterner;
 import org.gradle.api.internal.file.FileLookup;
 import org.gradle.api.internal.file.collections.DirectoryFileTreeFactory;
-import org.gradle.internal.hash.FileHasher;
 import org.gradle.api.internal.initialization.ClassLoaderScope;
 import org.gradle.api.internal.initialization.ScriptHandlerFactory;
 import org.gradle.api.internal.initialization.ScriptHandlerInternal;
@@ -45,17 +48,27 @@ import org.gradle.groovy.scripts.internal.InitialPassStatementTransformer;
 import org.gradle.groovy.scripts.internal.SubsetScriptTransformer;
 import org.gradle.internal.Actions;
 import org.gradle.internal.Factory;
+import org.gradle.internal.hash.FileHasher;
 import org.gradle.internal.logging.LoggingManagerInternal;
 import org.gradle.internal.reflect.Instantiator;
 import org.gradle.internal.resource.TextResourceLoader;
 import org.gradle.internal.service.DefaultServiceRegistry;
 import org.gradle.model.dsl.internal.transform.ClosureCreationInterceptingVerifier;
 import org.gradle.model.internal.inspect.ModelRuleSourceDetector;
+import org.gradle.plugin.management.internal.DefaultPluginRequest;
+import org.gradle.plugin.management.internal.DefaultPluginRequests;
+import org.gradle.plugin.management.internal.PluginRequestInternal;
 import org.gradle.plugin.management.internal.PluginRequests;
 import org.gradle.plugin.management.internal.PluginRequestsSerializer;
+import org.gradle.plugin.management.internal.PluginRequestsTransformer;
 import org.gradle.plugin.repository.internal.PluginRepositoryFactory;
 import org.gradle.plugin.repository.internal.PluginRepositoryRegistry;
+import org.gradle.plugin.use.PluginId;
+import org.gradle.plugin.use.internal.DefaultPluginId;
 import org.gradle.plugin.use.internal.PluginRequestApplicator;
+import org.gradle.util.CollectionUtils;
+
+import java.util.List;
 
 public class DefaultScriptPluginFactory implements ScriptPluginFactory {
     private final static StringInterner INTERNER = new StringInterner();
@@ -76,6 +89,7 @@ public class DefaultScriptPluginFactory implements ScriptPluginFactory {
     private final ProviderFactory providerFactory;
     private final TextResourceLoader textResourceLoader;
     private final FileHasher fileHasher;
+    private final PluginRequestsTransformer pluginRequestsTransformer = new BuildScanPluginRequestsTransformer();
     private ScriptPluginFactory scriptPluginFactory;
 
     public DefaultScriptPluginFactory(ScriptCompilerFactory scriptCompilerFactory,
@@ -173,6 +187,8 @@ public class DefaultScriptPluginFactory implements ScriptPluginFactory {
             initialRunner.run(target, services);
 
             PluginRequests pluginRequests = initialRunner.getData();
+            pluginRequests = pluginRequestsTransformer.transformPluginRequests(pluginRequests, target);
+
             PluginManagerInternal pluginManager = initialPassScriptTarget.getPluginManager();
             pluginRequestApplicator.applyPlugins(pluginRequests, scriptHandler, pluginManager, targetScope);
 
@@ -229,6 +245,36 @@ public class DefaultScriptPluginFactory implements ScriptPluginFactory {
             } else {
                 return new DefaultScriptTarget(target);
             }
+        }
+    }
+
+    private static final class BuildScanPluginRequestsTransformer implements PluginRequestsTransformer {
+        @Override
+        public PluginRequests transformPluginRequests(PluginRequests requests, Object pluginTarget) {
+            if (!(pluginTarget instanceof Project)) {
+                return requests;
+            }
+
+            Configuration classpathConfiguration = ((Project) pluginTarget).getBuildscript().getConfigurations().getByName(ScriptHandler.CLASSPATH_CONFIGURATION);
+            for (Dependency dependency : classpathConfiguration.getDependencies()) {
+                if (dependency.getGroup().equals("com.gradle") && dependency.getName().equals("build-scan-plugin")) {
+                    return requests;
+                }
+            }
+
+            PluginId buildScanPlugin = DefaultPluginId.of("com.gradle.build-scan");
+            for (PluginRequestInternal request : requests) {
+                if (buildScanPlugin.equals(request.getId())) {
+                    // Build scan plugin already requested
+                    return requests;
+                }
+            }
+
+            List<PluginRequestInternal> copyRequests = Lists.newArrayList();
+            DefaultPluginRequest buildScanPluginRequest = new DefaultPluginRequest(buildScanPlugin, "1.1", true, 1, "built-in", null);
+            copyRequests.add(0, buildScanPluginRequest);
+            CollectionUtils.addAll(copyRequests, requests);
+            return new DefaultPluginRequests(copyRequests);
         }
     }
 }

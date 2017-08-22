@@ -56,6 +56,8 @@ public abstract class AbstractTaskOutputPackagingBenchmark {
         .put("tar.large", new AntTarPacker(64))
         .put("tar.gz", new GzipPacker(new AntTarPacker(4)))
         .put("zip", new ZipPacker(4))
+        .put("zip.commons", new CommonsZipPacker(4, false))
+        .put("zip.commons.parallel", new CommonsZipPacker(4, true))
         .build();
 
     private static final Map<String, DataAccessor> ACCESSORS = ImmutableMap.<String, DataAccessor>builder()

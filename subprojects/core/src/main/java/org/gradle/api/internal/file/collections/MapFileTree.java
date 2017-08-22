@@ -30,6 +30,7 @@ import org.gradle.internal.nativeintegration.filesystem.Chmod;
 import org.gradle.util.CollectionUtils;
 import org.gradle.util.ConfigureUtil;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -234,7 +235,7 @@ public class MapFileTree implements MinimalFileTree, FileSystemMirroringFileTree
         }
 
         public InputStream open() {
-            throw new UnsupportedOperationException();
+            return new ByteArrayInputStream(generateContent());
         }
 
         public RelativePath getRelativePath() {

@@ -19,7 +19,7 @@ import org.apache.tools.zip.ZipOutputStream;
 import org.gradle.api.Incubating;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.internal.DocumentationRegistry;
-import org.gradle.api.internal.file.archive.ZipCopyAction;
+import org.gradle.api.internal.file.archive.parallel.ParallelZipCopyAction;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.internal.file.copy.DefaultZipCompressor;
 import org.gradle.api.internal.file.copy.ZipCompressor;
@@ -60,7 +60,7 @@ public class Zip extends AbstractArchiveTask {
     @Override
     protected CopyAction createCopyAction() {
         DocumentationRegistry documentationRegistry = getServices().get(DocumentationRegistry.class);
-        return new ZipCopyAction(getArchivePath(), getCompressor(), documentationRegistry, metadataCharset, isPreserveFileTimestamps());
+        return new ParallelZipCopyAction(getArchivePath(), allowZip64, metadataCharset, isPreserveFileTimestamps());
     }
 
     /**

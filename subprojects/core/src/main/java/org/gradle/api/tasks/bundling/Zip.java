@@ -19,6 +19,7 @@ import org.apache.tools.zip.ZipOutputStream;
 import org.gradle.api.Incubating;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.internal.DocumentationRegistry;
+import org.gradle.api.internal.file.archive.ZipCopyAction;
 import org.gradle.api.internal.file.archive.parallel.ParallelZipCopyAction;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.internal.file.copy.DefaultZipCompressor;
@@ -26,6 +27,7 @@ import org.gradle.api.internal.file.copy.ZipCompressor;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
+import org.gradle.internal.operations.BuildOperationExecutor;
 
 import java.nio.charset.Charset;
 
@@ -57,10 +59,17 @@ public class Zip extends AbstractArchiveTask {
         }
     }
 
+    private BuildOperationExecutor getBuildOperationExecutor() {
+        return getServices().get(BuildOperationExecutor.class);
+    }
+
     @Override
     protected CopyAction createCopyAction() {
-        DocumentationRegistry documentationRegistry = getServices().get(DocumentationRegistry.class);
-        return new ParallelZipCopyAction(getArchivePath(), allowZip64, metadataCharset, isPreserveFileTimestamps());
+        if (isReproducibleFileOrder()) {
+            DocumentationRegistry documentationRegistry = getServices().get(DocumentationRegistry.class);
+            return new ZipCopyAction(getArchivePath(), getCompressor(), documentationRegistry, metadataCharset, isPreserveFileTimestamps());
+        }
+        return new ParallelZipCopyAction(getArchivePath(), allowZip64, metadataCharset, isPreserveFileTimestamps(), getBuildOperationExecutor());
     }
 
     /**

@@ -32,7 +32,7 @@ public class ZipPacker implements Packer {
 
     @Override
     public void pack(List<DataSource> inputs, DataTarget output) throws IOException {
-        ZipOutputStream zipOutput = new ZipOutputStream(output.openOutput());
+        ZipOutputStream zipOutput = new ZipOutputStream(output.openOutputStream());
         for (DataSource input : inputs) {
             ZipEntry entry = new ZipEntry(input.getName());
             entry.setSize(input.getLength());

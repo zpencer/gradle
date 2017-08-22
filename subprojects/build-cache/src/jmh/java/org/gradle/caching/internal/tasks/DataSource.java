@@ -18,8 +18,10 @@ package org.gradle.caching.internal.tasks;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.SeekableByteChannel;
 
 public interface DataSource extends DataItem {
     InputStream openInput() throws IOException;
     long getLength() throws IOException;
+    SeekableByteChannel openReadChannel() throws IOException ;
 }

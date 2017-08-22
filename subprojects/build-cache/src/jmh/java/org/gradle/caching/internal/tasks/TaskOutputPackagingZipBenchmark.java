@@ -19,7 +19,7 @@ package org.gradle.caching.internal.tasks;
 import org.openjdk.jmh.annotations.Param;
 
 public class TaskOutputPackagingZipBenchmark extends AbstractTaskOutputPackagingBenchmark {
-    @Param({"zip", "zip.commons", "zip.commons.parallel"})
+    @Param({"zip", "zip.commons", "zip.commons.parallel", "zip.commons.channels", "zip.commons.parallel.channels"})
     String packer;
 
     @Param({"direct", "buffered"})

@@ -33,7 +33,7 @@ public class AntTarPacker implements Packer {
 
     @Override
     public void pack(List<DataSource> inputs, DataTarget output) throws IOException {
-        TarOutputStream tarOutput = new TarOutputStream(output.openOutput());
+        TarOutputStream tarOutput = new TarOutputStream(output.openOutputStream());
         for (DataSource input : inputs) {
             TarEntry entry = new TarEntry(input.getName());
             entry.setSize(input.getLength());

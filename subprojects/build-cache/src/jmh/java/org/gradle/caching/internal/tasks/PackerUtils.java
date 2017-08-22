@@ -34,7 +34,7 @@ public class PackerUtils {
 
     public static void unpackEntry(String name, InputStream inputStream, byte[] buffer, DataTargetFactory targetFactory) throws IOException {
         DataTarget target = targetFactory.createDataTarget(name);
-        OutputStream outputStream = target.openOutput();
+        OutputStream outputStream = target.openOutputStream();
         try {
             IOUtils.copyLarge(inputStream, outputStream, buffer);
         } finally {

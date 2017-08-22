@@ -35,8 +35,8 @@ public class SnappyCommonsPacker implements Packer {
     public void pack(List<DataSource> inputs, DataTarget output) throws IOException {
         delegate.pack(inputs, new DelegatingDataTarget(output) {
             @Override
-            public OutputStream openOutput() throws IOException {
-                return new FramedSnappyCompressorOutputStream(super.openOutput());
+            public OutputStream openOutputStream() throws IOException {
+                return new FramedSnappyCompressorOutputStream(super.openOutputStream());
             }
         });
     }

@@ -34,7 +34,7 @@ public class JTarPacker implements Packer {
 
     @Override
     public void pack(List<DataSource> inputs, DataTarget output) throws IOException {
-        TarOutputStream tarOutput = new TarOutputStream(output.openOutput());
+        TarOutputStream tarOutput = new TarOutputStream(output.openOutputStream());
         for (DataSource input : inputs) {
             @SuppressWarnings("OctalInteger")
             TarHeader header = TarHeader.createHeader(input.getName(), input.getLength(), 0, false, 0644);

@@ -16,6 +16,7 @@
 
 package org.gradle.caching.internal.tasks;
 
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.openjdk.jmh.annotations.Level;
 
 import java.io.ByteArrayInputStream;
@@ -23,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.SeekableByteChannel;
 
 public class InMemoryDataAccessor implements DataAccessor {
     @Override
@@ -68,11 +70,17 @@ public class InMemoryDataAccessor implements DataAccessor {
         public long getLength() throws IOException {
             return data.length;
         }
+
+        @Override
+        public SeekableByteChannel openReadChannel() throws IOException {
+            return new SeekableInMemoryByteChannel(data);
+        }
     }
 
     private static class Target implements DataTarget {
         private final String name;
-        private final ByteArrayOutputStream data = new ByteArrayOutputStream();
+        private ByteArrayOutputStream data;
+        private SeekableInMemoryByteChannel channel;
 
         public Target(String name) {
             this.name = name;
@@ -84,13 +92,27 @@ public class InMemoryDataAccessor implements DataAccessor {
         }
 
         @Override
-        public OutputStream openOutput() throws IOException {
+        public SeekableByteChannel openWriteChannel() throws IOException {
+            channel = new SeekableInMemoryByteChannel();
+            return channel;
+        }
+
+        @Override
+        public OutputStream openOutputStream() throws IOException {
+            data = new ByteArrayOutputStream();
             return data;
         }
 
         @Override
         public DataSource toSource() throws IOException {
-            return new Source(name, data.toByteArray());
+            if (data != null) {
+                return new Source(name, data.toByteArray());
+            } else {
+                byte[] array = channel.array();
+                byte[] result = new byte[(int) channel.size()];
+                System.arraycopy(array, 0, result, 0, result.length);
+                return new Source(name, result);
+            }
         }
     }
 }

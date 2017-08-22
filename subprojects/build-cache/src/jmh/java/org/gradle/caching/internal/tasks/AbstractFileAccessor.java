@@ -21,6 +21,7 @@ import org.openjdk.jmh.annotations.Level;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -62,7 +63,10 @@ public abstract class AbstractFileAccessor implements DataAccessor {
 
     protected abstract InputStream openInput(Path path) throws IOException;
 
-    protected abstract OutputStream openOutput(Path path) throws IOException;
+    protected abstract OutputStream openOutputStream(Path path) throws IOException;
+
+    protected abstract SeekableByteChannel openOutputChannel(Path path) throws IOException;
+    protected abstract SeekableByteChannel openReadChannel(Path path) throws IOException;
 
     private class Source implements DataSource {
         private final Path path;
@@ -85,6 +89,11 @@ public abstract class AbstractFileAccessor implements DataAccessor {
         public long getLength() throws IOException {
             return Files.size(path);
         }
+
+        @Override
+        public SeekableByteChannel openReadChannel() throws IOException {
+            return AbstractFileAccessor.this.openReadChannel(path);
+        }
     }
 
     private class Target implements DataTarget {
@@ -100,8 +109,13 @@ public abstract class AbstractFileAccessor implements DataAccessor {
         }
 
         @Override
-        public OutputStream openOutput() throws IOException {
-            return AbstractFileAccessor.this.openOutput(path);
+        public SeekableByteChannel openWriteChannel() throws IOException {
+            return AbstractFileAccessor.this.openOutputChannel(path);
+        }
+
+        @Override
+        public OutputStream openOutputStream() throws IOException {
+            return AbstractFileAccessor.this.openOutputStream(path);
         }
 
         @Override

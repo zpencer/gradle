@@ -20,10 +20,12 @@ import org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
@@ -32,10 +34,12 @@ public class CommonsZipPacker implements Packer {
 
     private final byte[] buffer;
     private final boolean parallel;
+    private final boolean useChannels;
 
-    public CommonsZipPacker(int bufferSizeInKBytes, boolean parallel) {
+    public CommonsZipPacker(int bufferSizeInKBytes, boolean parallel, boolean useChannels) {
         this.buffer = new byte[bufferSizeInKBytes];
         this.parallel = parallel;
+        this.useChannels = useChannels;
     }
 
     @Override
@@ -48,7 +52,8 @@ public class CommonsZipPacker implements Packer {
     }
 
     private void serialPack(List<DataSource> inputs, DataTarget output) throws IOException {
-        ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(output.openOutput());
+        ZipArchiveOutputStream zipOutput =
+            useChannels ? new ZipArchiveOutputStream(output.openWriteChannel()) : new ZipArchiveOutputStream(output.openOutputStream());
         for (DataSource input : inputs) {
             ZipArchiveEntry entry = new ZipArchiveEntry(input.getName());
             entry.setSize(input.getLength());
@@ -61,7 +66,8 @@ public class CommonsZipPacker implements Packer {
 
     private void parallelPack(List<DataSource> inputs, DataTarget output) throws IOException {
         ParallelScatterZipCreator creator = new ParallelScatterZipCreator();
-        ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(output.openOutput());
+        ZipArchiveOutputStream zipOutput =
+            useChannels ? new ZipArchiveOutputStream(output.openWriteChannel()) : new ZipArchiveOutputStream(output.openOutputStream());
         for (final DataSource input : inputs) {
             ZipArchiveEntry entry = new ZipArchiveEntry(input.getName());
             entry.setSize(input.getLength());
@@ -90,6 +96,10 @@ public class CommonsZipPacker implements Packer {
 
     @Override
     public void unpack(DataSource input, DataTargetFactory targetFactory) throws IOException {
+        if (useChannels) {
+            unpackUsingChannel(input, targetFactory);
+            return;
+        }
         ZipArchiveInputStream zipInput = new ZipArchiveInputStream(input.openInput());
         while (true) {
             ZipArchiveEntry entry = zipInput.getNextZipEntry();
@@ -99,5 +109,15 @@ public class CommonsZipPacker implements Packer {
             PackerUtils.unpackEntry(entry.getName(), zipInput, buffer, targetFactory);
         }
         zipInput.close();
+    }
+
+    private void unpackUsingChannel(DataSource input, DataTargetFactory targetFactory) throws IOException {
+        ZipFile zipFile = new ZipFile(input.openReadChannel());
+        Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+        while (entries.hasMoreElements()) {
+            ZipArchiveEntry entry = entries.nextElement();
+            PackerUtils.unpackEntry(entry.getName(), zipFile.getInputStream(entry), buffer, targetFactory);
+        }
+        zipFile.close();
     }
 }

@@ -33,7 +33,7 @@ public class CommonsTarPacker implements Packer {
 
     @Override
     public void pack(List<DataSource> inputs, DataTarget output) throws IOException {
-        TarArchiveOutputStream tarOutput = new TarArchiveOutputStream(output.openOutput());
+        TarArchiveOutputStream tarOutput = new TarArchiveOutputStream(output.openOutputStream());
         for (DataSource input : inputs) {
             TarArchiveEntry entry = new TarArchiveEntry(input.getName());
             entry.setSize(input.getLength());

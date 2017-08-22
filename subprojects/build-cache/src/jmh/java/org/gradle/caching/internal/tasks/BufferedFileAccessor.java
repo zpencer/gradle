@@ -21,8 +21,10 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 @SuppressWarnings("Since15")
 public class BufferedFileAccessor extends AbstractFileAccessor {
@@ -39,7 +41,17 @@ public class BufferedFileAccessor extends AbstractFileAccessor {
     }
 
     @Override
-    protected OutputStream openOutput(Path path) throws IOException {
+    protected OutputStream openOutputStream(Path path) throws IOException {
         return new BufferedOutputStream(Files.newOutputStream(path), bufferSize);
+    }
+
+    @Override
+    protected SeekableByteChannel openOutputChannel(Path path) throws IOException {
+        return Files.newByteChannel(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+    }
+
+    @Override
+    protected SeekableByteChannel openReadChannel(Path path) throws IOException {
+        return Files.newByteChannel(path, StandardOpenOption.READ);
     }
 }

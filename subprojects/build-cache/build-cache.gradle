@@ -37,3 +37,7 @@ dependencies {
 useTestFixtures()
 useClassycle()
 strictCompile()
+
+jmh {
+//    include = ['org.gradle.caching.internal.tasks.TaskOutputPackagingZipBenchmark']
+}

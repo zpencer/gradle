@@ -18,6 +18,7 @@ package org.gradle.caching.internal.tasks;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.SeekableByteChannel;
 
 public abstract class DelegatingDataSource implements DataSource {
     private final DataSource delegate;
@@ -29,6 +30,11 @@ public abstract class DelegatingDataSource implements DataSource {
     @Override
     public InputStream openInput() throws IOException {
         return delegate.openInput();
+    }
+
+    @Override
+    public SeekableByteChannel openReadChannel() throws IOException {
+        return delegate.openReadChannel();
     }
 
     @Override

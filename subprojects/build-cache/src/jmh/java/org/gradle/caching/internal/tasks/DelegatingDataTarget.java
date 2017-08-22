@@ -18,6 +18,7 @@ package org.gradle.caching.internal.tasks;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.channels.SeekableByteChannel;
 
 public abstract class DelegatingDataTarget implements DataTarget {
     private final DataTarget delegate;
@@ -27,8 +28,8 @@ public abstract class DelegatingDataTarget implements DataTarget {
     }
 
     @Override
-    public OutputStream openOutput() throws IOException {
-        return delegate.openOutput();
+    public OutputStream openOutputStream() throws IOException {
+        return delegate.openOutputStream();
     }
 
     @Override
@@ -39,5 +40,10 @@ public abstract class DelegatingDataTarget implements DataTarget {
     @Override
     public String getName() {
         return delegate.getName();
+    }
+
+    @Override
+    public SeekableByteChannel openWriteChannel() throws IOException {
+        return delegate.openWriteChannel();
     }
 }

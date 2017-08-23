@@ -33,6 +33,6 @@ public class UserInputRequestEvent extends OutputEvent {
     @Nullable
     @Override
     public LogLevel getLogLevel() {
-        return LogLevel.ERROR;
+        return LogLevel.QUIET;
     }
 }

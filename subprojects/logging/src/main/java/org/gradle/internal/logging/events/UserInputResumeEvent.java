@@ -23,6 +23,6 @@ public class UserInputResumeEvent extends OutputEvent {
     @Nullable
     @Override
     public LogLevel getLogLevel() {
-        return LogLevel.ERROR;
+        return LogLevel.QUIET;
     }
 }

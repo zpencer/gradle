@@ -16,6 +16,7 @@
 package org.gradle.api.internal.tasks;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.gradle.internal.UncheckedException;
 import org.gradle.internal.logging.sink.OutputEventRenderer;
 
@@ -23,6 +24,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+// TODO:DAZ Sanity check input
+// TODO:DAZ Handle ctrl-D to cancel build during input
+// TODO:DAZ Provide a way for plugins to see if user-input handling is unsupported (TAPI, CI, etc)
+// TODO:DAZ Fail gracefully when user-input handling is unsupported
 public class UserInputHandler {
     private final OutputEventRenderer outputEventRenderer;
 
@@ -33,7 +38,7 @@ public class UserInputHandler {
     public String getUserResponse(String prompt) {
         outputEventRenderer.onOutput(new org.gradle.internal.logging.events.UserInputRequestEvent(prompt));
         try {
-            return readInput();
+            return StringUtils.trim(readInput());
         } finally {
             outputEventRenderer.onOutput(new org.gradle.internal.logging.events.UserInputResumeEvent());
         }

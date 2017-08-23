@@ -15,14 +15,10 @@
  */
 package org.gradle.api.internal.tasks;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.gradle.internal.UncheckedException;
 import org.gradle.internal.logging.sink.OutputEventRenderer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Scanner;
 
 // TODO:DAZ Sanity check input
 // TODO:DAZ Handle ctrl-D to cancel build during input
@@ -45,14 +41,8 @@ public class UserInputHandler {
     }
 
     private String readInput() {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        try {
-            return bufferedReader.readLine();
-        } catch (IOException e) {
-            throw UncheckedException.throwAsUncheckedException(e);
-        } finally {
-            IOUtils.closeQuietly(bufferedReader);
-        }
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
     }
 
 }

@@ -363,9 +363,6 @@ public class OutputEventRenderer implements OutputEventListener, LoggingRouter {
         @Override
         public void onOutput(OutputEvent event) {
             if (event instanceof UserInputRequestEvent) {
-                if (paused) {
-                    throw new RuntimeException("Double pause");
-                }
                 String prompt = ((UserInputRequestEvent) event).getPrompt();
                 console.getBuildProgressArea().setVisible(false);
                 console.flush();

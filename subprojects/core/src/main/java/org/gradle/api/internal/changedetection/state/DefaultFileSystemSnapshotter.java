@@ -187,11 +187,11 @@ public class DefaultFileSystemSnapshotter implements FileSystemSnapshotter {
     }
 
     private FileHashSnapshot fileSnapshot(FileTreeElement fileDetails) {
-        return new FileHashSnapshot(hasher.hash(fileDetails), fileDetails.getLastModified());
+        return new FileHashSnapshot(hasher.hash(fileDetails), fileDetails.getLastModified(), fileDetails.getSize());
     }
 
     private FileHashSnapshot fileSnapshot(File file, FileMetadataSnapshot fileDetails) {
-        return new FileHashSnapshot(hasher.hash(file, fileDetails), fileDetails.getLastModified());
+        return new FileHashSnapshot(hasher.hash(file, fileDetails), fileDetails.getLastModified(), fileDetails.getLength());
     }
 
     private static class HashBackedSnapshot implements Snapshot {

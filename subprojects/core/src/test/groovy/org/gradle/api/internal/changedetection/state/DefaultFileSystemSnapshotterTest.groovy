@@ -41,7 +41,7 @@ class DefaultFileSystemSnapshotterTest extends Specification {
         snapshot.type == FileType.RegularFile
         snapshot.root
         snapshot.relativePath.toString() == "f"
-        snapshot.content == new FileHashSnapshot(fileHasher.hash(f), f.lastModified())
+        snapshot.content == new FileHashSnapshot(fileHasher.hash(f), f.lastModified(), f.length())
 
         def snapshot2 = snapshotter.snapshotSelf(f)
         snapshot2.is(snapshot)

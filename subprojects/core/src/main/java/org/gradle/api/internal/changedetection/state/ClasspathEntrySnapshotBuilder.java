@@ -69,7 +69,7 @@ public class ClasspathEntrySnapshotBuilder implements ResourceWithContentsVisito
     public void visitZipFileEntry(ZipEntry zipEntry, InputStream zipInput) throws IOException {
         HashCode hash = classpathResourceHasher.hash(zipEntry, zipInput);
         if (hash != null) {
-            normalizedSnapshots.put(zipEntry.getName(), new DefaultNormalizedFileSnapshot(zipEntry.getName(), new FileHashSnapshot(hash)));
+            normalizedSnapshots.put(zipEntry.getName(), new DefaultNormalizedFileSnapshot(zipEntry.getName(), new FileHashSnapshot(hash, zipEntry.getTime(), zipEntry.getSize())));
         }
     }
 

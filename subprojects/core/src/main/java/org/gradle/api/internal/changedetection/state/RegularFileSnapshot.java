@@ -27,9 +27,9 @@ public class RegularFileSnapshot implements FileSnapshot {
     private final String path;
     private final RelativePath relativePath;
     private final boolean root;
-    private final FileContentSnapshot content;
+    private final FileHashSnapshot content;
 
-    public RegularFileSnapshot(String path, RelativePath relativePath, boolean root, FileContentSnapshot content) {
+    public RegularFileSnapshot(String path, RelativePath relativePath, boolean root, FileHashSnapshot content) {
         this.path = path;
         this.relativePath = relativePath;
         this.root = root;
@@ -73,8 +73,9 @@ public class RegularFileSnapshot implements FileSnapshot {
 
     @Override
     public RegularFileSnapshot withContentHash(HashCode contentHash) {
-        if (!contentHash.equals(getContent().getContentMd5())) {
-            return new RegularFileSnapshot(path, relativePath, root, new FileHashSnapshot(contentHash));
+        FileHashSnapshot content = this.content.withContentHash(contentHash);
+        if (this.content != content) {
+            return new RegularFileSnapshot(path, relativePath, root, content);
         }
         return this;
     }

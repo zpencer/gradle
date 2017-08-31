@@ -22,15 +22,13 @@ import org.gradle.internal.hash.HashCode;
 
 public class FileHashSnapshot implements FileContentSnapshot {
     private final HashCode hash;
-    private final transient long lastModified; // Currently not persisted
+    private final long lastModified;
+    private final long length;
 
-    public FileHashSnapshot(HashCode hash) {
-        this(hash, 0L);
-    }
-
-    public FileHashSnapshot(HashCode hash, long lastModified) {
+    public FileHashSnapshot(HashCode hash, long lastModified, long length) {
         this.hash = hash;
         this.lastModified = lastModified;
+        this.length = length;
     }
 
     public boolean isContentUpToDate(FileContentSnapshot snapshot) {
@@ -80,5 +78,23 @@ public class FileHashSnapshot implements FileContentSnapshot {
     @Override
     public HashCode getContentMd5() {
         return hash;
+    }
+
+    public long getLastModified() {
+        return lastModified;
+    }
+
+    public long getLength() {
+        return length;
+    }
+
+    /**
+     * Create new snapshot with overridden content hash.
+     */
+    public FileHashSnapshot withContentHash(HashCode hash) {
+        if (hash.equals(this.hash)) {
+            return this;
+        }
+        return new FileHashSnapshot(hash, lastModified, length);
     }
 }

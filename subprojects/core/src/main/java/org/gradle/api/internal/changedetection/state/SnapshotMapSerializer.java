@@ -18,6 +18,7 @@ package org.gradle.api.internal.changedetection.state;
 
 import com.google.common.base.Objects;
 import org.gradle.api.internal.cache.StringInterner;
+import org.gradle.internal.hash.HashCode;
 import org.gradle.internal.serialize.AbstractSerializer;
 import org.gradle.internal.serialize.Decoder;
 import org.gradle.internal.serialize.Encoder;
@@ -67,7 +68,10 @@ public class SnapshotMapSerializer extends AbstractSerializer<Map<String, Normal
                 snapshot = MissingFileContentSnapshot.getInstance();
                 break;
             case REGULAR_FILE_SNAPSHOT:
-                snapshot = new FileHashSnapshot(hashCodeSerializer.read(decoder));
+                HashCode hashCode = hashCodeSerializer.read(decoder);
+                long lastModified = decoder.readSmallLong();
+                long length = decoder.readSmallLong();
+                snapshot = new FileHashSnapshot(hashCode, lastModified, length);
                 break;
             default:
                 throw new RuntimeException("Unable to read serialized file snapshot. Unrecognized value found in the data stream.");
@@ -124,6 +128,9 @@ public class SnapshotMapSerializer extends AbstractSerializer<Map<String, Normal
         } else if (snapshot instanceof FileHashSnapshot) {
             encoder.writeByte(REGULAR_FILE_SNAPSHOT);
             hashCodeSerializer.write(encoder, snapshot.getContentMd5());
+            FileHashSnapshot fileSnapshot = (FileHashSnapshot) snapshot;
+            encoder.writeSmallLong(fileSnapshot.getLastModified());
+            encoder.writeSmallLong(fileSnapshot.getLength());
         } else {
             throw new AssertionError();
         }

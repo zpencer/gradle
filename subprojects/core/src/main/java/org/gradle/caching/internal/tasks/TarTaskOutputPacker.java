@@ -181,9 +181,10 @@ public class TarTaskOutputPacker implements TaskOutputPacker {
             String relativePath = rootUri.relativize(file.toURI()).toString();
             String targetPath = propertyRoot + relativePath;
             int mode = fileSystem.getUnixMode(file);
-            switch (entry.getValue().getType()) {
+            FileContentSnapshot snapshot = entry.getValue();
+            switch (snapshot.getType()) {
                 case RegularFile:
-                    storeFileEntry(file, targetPath, file.length(), mode, tarOutput);
+                    storeFileEntry(file, targetPath, ((FileHashSnapshot) snapshot).getLength(), mode, tarOutput);
                     break;
                 case Directory:
                     storeDirectoryEntry(targetPath, mode, tarOutput);
@@ -338,7 +339,7 @@ public class TarTaskOutputPacker implements TaskOutputPacker {
             } finally {
                 IOUtils.closeQuietly(output);
             }
-            FileHashSnapshot contentSnapshot = new FileHashSnapshot(hash, outputFile.lastModified());
+            FileHashSnapshot contentSnapshot = new FileHashSnapshot(hash, outputFile.lastModified(), entry.getSize());
             fileSnapshots.put(propertyName, new RegularFileSnapshot(internedPath, relativePath, root, contentSnapshot));
         }
 

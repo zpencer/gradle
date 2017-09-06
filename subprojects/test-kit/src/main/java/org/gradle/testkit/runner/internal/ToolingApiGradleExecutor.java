@@ -20,7 +20,6 @@ import org.apache.commons.io.output.TeeOutputStream;
 import org.gradle.internal.SystemProperties;
 import org.gradle.internal.io.StreamByteBuffer;
 import org.gradle.testkit.runner.BuildTask;
-import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.testkit.runner.UnsupportedFeatureException;
 import org.gradle.testkit.runner.internal.feature.TestKitFeature;
@@ -125,7 +124,7 @@ public class ToolingApiGradleExecutor implements GradleExecutor {
 
             launcher.run();
         } catch (UnsupportedVersionException e) {
-            throw new InvalidRunnerConfigurationException("The build could not be executed due to a feature not being supported by the target Gradle version", e);
+            throw e;
         } catch (BuildException t) {
             return new GradleExecutionResult(new BuildOperationParameters(targetGradleVersion, parameters.isEmbedded()), outputBuffer.readAsString(), tasks, t);
         } catch (GradleConnectionException t) {

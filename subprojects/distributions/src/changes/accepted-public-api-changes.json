@@ -10,6 +10,21 @@
             "type": "org.gradle.api.tasks.WorkResults",
             "member": "Method org.gradle.api.tasks.WorkResults.didWork(boolean)",
             "acceptation": "Not incubating"
+        },
+        {
+            "type": "org.gradle.tooling.UnsupportedVersionException",
+            "member": "Method org.gradle.tooling.UnsupportedVersionException.checkConsumerVersion(org.gradle.util.GradleVersion)",
+            "acceptation": "Internal usage"
+        },
+        {
+            "type": "org.gradle.tooling.UnsupportedVersionException",
+            "member": "Method org.gradle.tooling.UnsupportedVersionException.checkProviderVersion(org.gradle.util.GradleVersion)",
+            "acceptation": "Internal usage"
+        },
+        {
+            "type": "org.gradle.tooling.UnsupportedVersionException",
+            "member": "Method org.gradle.tooling.UnsupportedVersionException.unsupportedConsumerVersion(org.gradle.util.GradleVersion)",
+            "acceptation": "Internal usage"
         }
     ]
 }

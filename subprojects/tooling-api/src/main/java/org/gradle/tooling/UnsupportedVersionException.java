@@ -15,17 +15,70 @@
  */
 package org.gradle.tooling;
 
+import org.gradle.util.DeprecationLogger;
+import org.gradle.util.GradleVersion;
+
 /**
  * Thrown when the target Gradle version does not support a particular feature.
  *
  * @since 1.0-milestone-3
  */
 public class UnsupportedVersionException extends GradleConnectionException {
+    private static final String UNSUPPORTED_MESSAGE = "Support for %s older than %s has been removed.%s You should upgrade your %s to version %s or later.";
+    private static final String DEPRECATION_WARNING = "Support for %s older than %s is deprecated and will be removed in %s.%s You should upgrade your %s.";
+
+    public static final GradleVersion MIN_PROVIDER_VERSION = GradleVersion.version("1.2");
+
+    public static final GradleVersion MIN_LTS_PROVIDER_VERSION = GradleVersion.version("2.6");
+
+    public static final GradleVersion MIN_CONSUMER_VERSION = GradleVersion.version("2.0");
+
+    public static final GradleVersion MIN_LTS_CONSUMER_VERSION = GradleVersion.version("3.0");
+
+    public static final String DEPRECATION_DEADLINE_VERSION = "5.0";
+
     public UnsupportedVersionException(String message) {
         super(message);
     }
 
     public UnsupportedVersionException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public static void checkConsumerVersion(GradleVersion consumerVersion) {
+        checkVersion(consumerVersion, MIN_CONSUMER_VERSION, MIN_LTS_CONSUMER_VERSION, "tooling API client");
+    }
+
+    public static UnsupportedVersionException unsupportedConsumerVersion(GradleVersion consumerVersion) {
+        return new UnsupportedVersionException(createUnsupportedMessage(consumerVersion, MIN_CONSUMER_VERSION, "tooling API client"));
+    }
+
+    public static void checkProviderVersion(GradleVersion providerVersion) {
+        checkVersion(providerVersion, MIN_PROVIDER_VERSION, MIN_LTS_PROVIDER_VERSION, "Gradle");
+    }
+
+    private static void checkVersion(GradleVersion current, GradleVersion minVersion, GradleVersion minLtsVersion, String description) {
+        if (current == null || current.compareTo(minVersion) < 0) {
+            throw new UnsupportedVersionException(createUnsupportedMessage(current, minVersion, description));
+        }
+        if (current.compareTo(minLtsVersion) < 0) {
+            DeprecationLogger.nagUserWith(createDeprecationMessage(current, minLtsVersion, description));
+        }
+    }
+
+    private static String createUnsupportedMessage(GradleVersion currentVersion, GradleVersion minVersion, String description) {
+        return String.format(UNSUPPORTED_MESSAGE, description, minVersion.getVersion(), createCurrentVersionMessage(currentVersion), description, minVersion.getVersion());
+    }
+
+    private static String createCurrentVersionMessage(GradleVersion currentVersion) {
+        if (currentVersion == null) {
+            return "";
+        } else {
+            return String.format(" You are currently using %s.", currentVersion.getVersion());
+        }
+    }
+
+    private static String createDeprecationMessage(GradleVersion currentVersion, GradleVersion minLtsVersion, String description) {
+        return String.format(DEPRECATION_WARNING, description, minLtsVersion.toString(), DEPRECATION_DEADLINE_VERSION, createCurrentVersionMessage(currentVersion), description);
     }
 }

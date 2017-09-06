@@ -63,14 +63,14 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.io.File;
 
+import static org.gradle.tooling.UnsupportedVersionException.*;
+
 public class DefaultConnection implements ConnectionVersion4, InternalConnection, BuildActionRunner,
     ConfigurableConnection, ModelBuilder, InternalBuildActionExecutor, InternalCancellableConnection, StoppableConnection, InternalTestExecutionConnection {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnection.class);
-    private static final GradleVersion MIN_CLIENT_VERSION = GradleVersion.version("2.0");
     private ProtocolToModelAdapter adapter;
     private ServiceRegistry services;
     private ProviderConnection connection;
-    private boolean supportedConsumerVersion;
     @Nullable // not provided by older client versions
     private GradleVersion consumerVersion;
 
@@ -94,7 +94,6 @@ public class DefaultConnection implements ConnectionVersion4, InternalConnection
         initializeServices(gradleUserHomeDir);
         connection.configure(providerConnectionParameters);
         consumerVersion = GradleVersion.version(providerConnectionParameters.getConsumerVersion());
-        supportedConsumerVersion = consumerVersion.compareTo(MIN_CLIENT_VERSION) >= 0;
     }
 
     private void initializeServices(File gradleUserHomeDir) {
@@ -143,7 +142,7 @@ public class DefaultConnection implements ConnectionVersion4, InternalConnection
      */
     @Deprecated
     public void executeBuild(BuildParametersVersion1 buildParameters, BuildOperationParametersVersion1 operationParameters) {
-        throw unsupportedConnectionException();
+        throw unsupportedConsumerVersion(consumerVersion);
     }
 
     /**
@@ -151,7 +150,7 @@ public class DefaultConnection implements ConnectionVersion4, InternalConnection
      */
     @Deprecated
     public ProjectVersion3 getModel(Class<? extends ProjectVersion3> type, BuildOperationParametersVersion1 parameters) {
-        throw unsupportedConnectionException();
+        throw unsupportedConsumerVersion(consumerVersion);
     }
 
     /**
@@ -159,7 +158,7 @@ public class DefaultConnection implements ConnectionVersion4, InternalConnection
      */
     @Deprecated
     public <T> T getTheModel(Class<T> type, BuildOperationParametersVersion1 parameters) {
-        throw unsupportedConnectionException();
+        throw unsupportedConsumerVersion(consumerVersion);
     }
 
     /**
@@ -167,7 +166,7 @@ public class DefaultConnection implements ConnectionVersion4, InternalConnection
      */
     @Deprecated
     public <T> BuildResult<T> run(Class<T> type, BuildParameters buildParameters) throws UnsupportedOperationException, IllegalStateException {
-        throw unsupportedConnectionException();
+        throw unsupportedConsumerVersion(consumerVersion);
     }
 
     /**
@@ -221,24 +220,11 @@ public class DefaultConnection implements ConnectionVersion4, InternalConnection
         return new ProviderBuildResult<Object>(results);
     }
 
-    private UnsupportedVersionException unsupportedConnectionException() {
-        StringBuilder message = new StringBuilder("Support for clients using a tooling API version older than 2.0 was removed in Gradle 3.0. ");
-        if (consumerVersion != null) {
-            // Consumer version is provided by client 1.2 and later
-            message.append("You are currently using tooling API version ");
-            message.append(consumerVersion.getVersion());
-            message.append(". ");
-        }
-        message.append("You should upgrade your tooling API client to version 2.0 or later.");
-        return new UnsupportedVersionException(message.toString());
-    }
 
     private ProviderOperationParameters validateAndConvert(BuildParameters buildParameters) {
         LOGGER.info("Tooling API is using target Gradle version: {}.", GradleVersion.current().getVersion());
         UnsupportedJavaRuntimeException.assertUsingVersion("Gradle", JavaVersion.VERSION_1_7);
-        if (!supportedConsumerVersion) {
-            throw unsupportedConnectionException();
-        }
+        checkConsumerVersion(consumerVersion);
 
         return adapter.builder(ProviderOperationParameters.class).mixInTo(ProviderOperationParameters.class, BuildLogLevelMixIn.class).build(buildParameters);
     }

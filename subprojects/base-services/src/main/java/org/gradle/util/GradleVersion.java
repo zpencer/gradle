@@ -53,7 +53,10 @@ public class GradleVersion implements Comparable<GradleVersion> {
         if (resource == null) {
             throw new GradleException(format("Resource '%s' not found.", RESOURCE_NAME));
         }
+        CURRENT = load(resource);
+    }
 
+    public static GradleVersion load(URL resource) {
         InputStream inputStream = null;
         try {
             URLConnection connection = resource.openConnection();
@@ -63,10 +66,13 @@ public class GradleVersion implements Comparable<GradleVersion> {
             properties.load(inputStream);
 
             String version = properties.get("versionNumber").toString();
-            String buildTimestamp = properties.get("buildTimestampIso").toString();
             String commitId = properties.get("commitId").toString();
+            Object buildTimestamp = properties.get("buildTimestampIso");
+            if (buildTimestamp == null) {
+                buildTimestamp = properties.get("buildTimestamp");
+            }
 
-            CURRENT = new GradleVersion(version, "unknown".equals(buildTimestamp) ? null : buildTimestamp, commitId);
+            return new GradleVersion(version, "unknown".equals(buildTimestamp) ? null : buildTimestamp.toString(), commitId);
         } catch (Exception e) {
             throw new GradleException(format("Could not load version details from resource '%s'.", resource), e);
         } finally {

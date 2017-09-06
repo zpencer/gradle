@@ -50,10 +50,12 @@ import org.gradle.tooling.internal.protocol.InternalCancellableConnection;
 import org.gradle.tooling.internal.protocol.ModelBuilder;
 import org.gradle.tooling.internal.protocol.StoppableConnection;
 import org.gradle.tooling.internal.protocol.test.InternalTestExecutionConnection;
+import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.URL;
 
 public class DefaultToolingImplementationLoader implements ToolingImplementationLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultToolingImplementationLoader.class);
@@ -72,6 +74,8 @@ public class DefaultToolingImplementationLoader implements ToolingImplementation
         ClassLoader serviceClassLoader = createImplementationClassLoader(distribution, progressLoggerFactory, progressListener, connectionParameters.getGradleUserHomeDir(), cancellationToken);
         ServiceLocator serviceLocator = new DefaultServiceLocator(serviceClassLoader);
         try {
+            checkImplementationVersion(serviceClassLoader);
+
             Factory<ConnectionVersion4> factory = serviceLocator.findFactory(ConnectionVersion4.class);
             if (factory == null) {
                 return new NoToolingApiConnection(distribution);
@@ -109,6 +113,14 @@ public class DefaultToolingImplementationLoader implements ToolingImplementation
         } catch (Throwable t) {
             throw new GradleConnectionException(String.format("Could not create an instance of Tooling API implementation using the specified %s.", distribution.getDisplayName()), t);
         }
+    }
+
+    private void checkImplementationVersion(ClassLoader classLoader) throws ClassNotFoundException {
+        Class clazz = classLoader.loadClass("org.gradle.util.GradleVersion");
+        URL url = clazz.getResource(GradleVersion.RESOURCE_NAME);
+        // build-receipt.properties since 1.1
+        GradleVersion providerVersion = url == null ? null : GradleVersion.load(url);
+        UnsupportedVersionException.checkProviderVersion(providerVersion);
     }
 
     private ClassLoader createImplementationClassLoader(Distribution distribution, ProgressLoggerFactory progressLoggerFactory, InternalBuildProgressListener progressListener, File userHomeDir, BuildCancellationToken cancellationToken) {

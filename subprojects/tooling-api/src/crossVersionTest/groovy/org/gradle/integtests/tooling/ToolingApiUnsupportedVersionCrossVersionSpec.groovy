@@ -16,6 +16,7 @@
 
 package org.gradle.integtests.tooling
 
+import org.gradle.integtests.tooling.fixture.ToolingApiUnsupportVersionTrait
 import org.gradle.integtests.tooling.r18.NullAction
 import org.gradle.integtests.tooling.fixture.TargetGradleVersion
 import org.gradle.integtests.tooling.fixture.ToolingApiSpecification
@@ -25,7 +26,7 @@ import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.model.eclipse.EclipseProject
 import org.gradle.util.GradleVersion
 
-class ToolingApiUnsupportedVersionCrossVersionSpec extends ToolingApiSpecification {
+class ToolingApiUnsupportedVersionCrossVersionSpec extends ToolingApiSpecification implements ToolingApiUnsupportVersionTrait {
     def setup() {
         file("build.gradle") << """
 task noop {
@@ -46,7 +47,7 @@ task noop {
 
         then:
         UnsupportedVersionException e = thrown()
-        e.message == "Support for builds using Gradle versions older than 1.2 was removed in tooling API version 3.0. You are currently using Gradle version ${targetDist.version.version}. You should upgrade your Gradle build to use Gradle 1.2 or later."
+        e.message == unsupportedMessage(targetVersion)
     }
 
     @ToolingApiVersion("current")
@@ -59,12 +60,25 @@ task noop {
 
         then:
         UnsupportedVersionException e = thrown()
-        e.message == "Support for builds using Gradle versions older than 1.2 was removed in tooling API version 3.0. You are currently using Gradle version ${targetDist.version.version}. You should upgrade your Gradle build to use Gradle 1.2 or later."
+        e.message == unsupportedMessage(targetVersion)
     }
 
     @ToolingApiVersion("current")
-    @TargetGradleVersion("<1.8")
-    def "build action execution fails for pre 1.8 providers"() {
+    @TargetGradleVersion("<1.2")
+    def "test execution fails for pre 1.2 providers"() {
+        when:
+        withConnection { ProjectConnection connection ->
+            connection.newTestLauncher().withJvmTestClasses("class").run()
+        }
+
+        then:
+        UnsupportedVersionException e = thrown()
+        e.message == unsupportedMessage(targetVersion)
+    }
+
+    @ToolingApiVersion("current")
+    @TargetGradleVersion(">=1.2 <1.8")
+    def "build action execution fails for >=1.2 and <1.8 providers"() {
         when:
         withConnection { ProjectConnection connection ->
             connection.action(new NullAction()).run()
@@ -76,8 +90,8 @@ task noop {
     }
 
     @ToolingApiVersion("current")
-    @TargetGradleVersion("<2.6")
-    def "test execution fails for pre 2.6 providers"() {
+    @TargetGradleVersion(">=1.2 <2.6")
+    def "test execution fails for >=1.2 and <2.6 providers"() {
         when:
         withConnection { ProjectConnection connection ->
             connection.newTestLauncher().withJvmTestClasses("class").run()
@@ -100,7 +114,7 @@ task noop {
 
         then:
         caughtGradleConnectionException = thrown()
-        caughtGradleConnectionException.cause.message.contains('Support for clients using a tooling API version older than 2.0 was removed in Gradle 3.0. You should upgrade your tooling API client to version 2.0 or later.')
+        caughtGradleConnectionException.cause.message.contains("Support for tooling API client older than ${minConsumerVersion} has been removed. You should upgrade your tooling API client to version ${minConsumerVersion} or later.")
     }
 
     @ToolingApiVersion(">=1.2 <2.0")
@@ -115,7 +129,7 @@ task noop {
 
         then:
         caughtGradleConnectionException = thrown()
-        caughtGradleConnectionException.cause.message.contains("Support for clients using a tooling API version older than 2.0 was removed in Gradle 3.0. You are currently using tooling API version ${GradleVersion.current().version}. You should upgrade your tooling API client to version 2.0 or later.")
+        caughtGradleConnectionException.cause.message.contains("Support for tooling API client older than ${minConsumerVersion} has been removed. You are currently using ${GradleVersion.current().version}. You should upgrade your tooling API client to version ${minConsumerVersion} or later.")
     }
 
     @ToolingApiVersion("<1.2")
@@ -129,7 +143,7 @@ task noop {
 
         then:
         caughtGradleConnectionException = thrown()
-        caughtGradleConnectionException.cause.message.contains('Support for clients using a tooling API version older than 2.0 was removed in Gradle 3.0. You should upgrade your tooling API client to version 2.0 or later.')
+        caughtGradleConnectionException.cause.message.contains("Support for tooling API client older than ${minConsumerVersion} has been removed. You should upgrade your tooling API client to version ${minConsumerVersion} or later.")
     }
 
     @ToolingApiVersion(">=1.2 <2.0")
@@ -143,7 +157,7 @@ task noop {
 
         then:
         caughtGradleConnectionException = thrown()
-        caughtGradleConnectionException.cause.message.contains("Support for clients using a tooling API version older than 2.0 was removed in Gradle 3.0. You are currently using tooling API version ${GradleVersion.current().version}. You should upgrade your tooling API client to version 2.0 or later.")
+        caughtGradleConnectionException.cause.message.contains("Support for tooling API client older than ${minConsumerVersion} has been removed. You are currently using ${GradleVersion.current().version}. You should upgrade your tooling API client to version ${minConsumerVersion} or later.")
     }
 
     @ToolingApiVersion(">=1.8 <2.0")
@@ -157,6 +171,6 @@ task noop {
 
         then:
         caughtGradleConnectionException = thrown()
-        caughtGradleConnectionException.cause.message.contains("Support for clients using a tooling API version older than 2.0 was removed in Gradle 3.0. You are currently using tooling API version ${GradleVersion.current().version}. You should upgrade your tooling API client to version 2.0 or later.")
+        caughtGradleConnectionException.cause.message.contains("Support for tooling API client older than ${minConsumerVersion} has been removed. You are currently using ${GradleVersion.current().version}. You should upgrade your tooling API client to version ${minConsumerVersion} or later.")
     }
 }

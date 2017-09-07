@@ -135,6 +135,7 @@ class DefaultVersionedComponentChooser implements VersionedComponentChooser {
                 result.noMatchFound();
                 break;
             case Failed:
+            case Unresolved:
                 result.failed(metaDataResult.getFailure());
                 break;
             default:

@@ -21,6 +21,7 @@ import org.gradle.internal.classloader.ClasspathUtil
 import org.gradle.internal.classpath.DefaultClassPath
 import org.gradle.internal.logging.progress.ProgressLoggerFactory
 import org.gradle.test.fixtures.file.TestNameTestDirectoryProvider
+import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.internal.consumer.ConnectionParameters
 import org.gradle.tooling.internal.consumer.Distribution
 import org.gradle.tooling.internal.consumer.connection.ActionAwareConsumerConnection
@@ -30,7 +31,6 @@ import org.gradle.tooling.internal.consumer.connection.ModelBuilderBackedConsume
 import org.gradle.tooling.internal.consumer.connection.NoToolingApiConnection
 import org.gradle.tooling.internal.consumer.connection.NonCancellableConsumerConnectionAdapter
 import org.gradle.tooling.internal.consumer.connection.ShutdownAwareConsumerConnection
-import org.gradle.tooling.internal.consumer.connection.UnsupportedOlderVersionConnection
 import org.gradle.tooling.internal.protocol.BuildActionRunner
 import org.gradle.tooling.internal.protocol.BuildExceptionVersion1
 import org.gradle.tooling.internal.protocol.BuildOperationParametersVersion1
@@ -118,10 +118,10 @@ class DefaultToolingImplementationLoaderTest extends Specification {
             ClasspathUtil.getClasspathForClass(GradleVersion.class))
 
         when:
-        def adaptedConnection = loader.create(distribution, loggerFactory, progressListener, connectionParameters, cancellationToken)
+        loader.create(distribution, loggerFactory, progressListener, connectionParameters, cancellationToken)
 
         then:
-        adaptedConnection.class == UnsupportedOlderVersionConnection.class
+        thrown(UnsupportedVersionException)
 
         where:
         connectionImplementation  | _

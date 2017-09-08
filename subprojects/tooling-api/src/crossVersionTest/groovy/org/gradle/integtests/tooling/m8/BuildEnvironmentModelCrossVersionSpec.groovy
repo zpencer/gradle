@@ -16,14 +16,11 @@
 
 package org.gradle.integtests.tooling.m8
 
-import org.gradle.integtests.tooling.fixture.TargetGradleVersion
 import org.gradle.integtests.tooling.fixture.ToolingApiSpecification
-import org.gradle.integtests.tooling.fixture.ToolingApiUnsupportVersionTrait
-import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.model.GradleProject
 import org.gradle.tooling.model.build.BuildEnvironment
 
-class BuildEnvironmentModelCrossVersionSpec extends ToolingApiSpecification implements ToolingApiUnsupportVersionTrait{
+class BuildEnvironmentModelCrossVersionSpec extends ToolingApiSpecification {
 
     def "informs about build environment"() {
         when:
@@ -33,16 +30,6 @@ class BuildEnvironmentModelCrossVersionSpec extends ToolingApiSpecification impl
         model.gradle.gradleVersion == targetDist.version.version
         model.java.javaHome
         !model.java.jvmArguments.empty
-    }
-
-    @TargetGradleVersion("<1.2")
-    def "partial BuildEnvironment model for pre 1.2 providers"() {
-        when:
-        withConnection { it.getModel(BuildEnvironment.class) }
-
-        then:
-        UnsupportedVersionException e = thrown(UnsupportedVersionException)
-        e.message.contains(unsupportedMessage(targetVersion))
     }
 
     def "informs about java args as in the build script"() {

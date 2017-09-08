@@ -31,6 +31,7 @@ import org.gradle.internal.jvm.inspection.JvmVersionDetector;
 import org.gradle.internal.logging.LoggingManagerInternal;
 import org.gradle.internal.logging.events.OutputEventListener;
 import org.gradle.internal.logging.services.LoggingServiceRegistry;
+import org.gradle.internal.logging.text.StreamBackedStandardOutputListener;
 import org.gradle.internal.service.ServiceRegistry;
 import org.gradle.launcher.cli.converter.LayoutToPropertiesConverter;
 import org.gradle.launcher.cli.converter.PropertiesToDaemonParametersConverter;
@@ -73,6 +74,9 @@ public class ProviderConnection {
     private final BuildActionExecuter<BuildActionParameters> embeddedExecutor;
     private final ServiceRegistry sharedServices;
     private final JvmVersionDetector jvmVersionDetector;
+    private LoggingManagerInternal loggingManager;
+    private StreamBackedStandardOutputListener stdOutListener;
+    private StreamBackedStandardOutputListener stdErrListener;
 
     public ProviderConnection(ServiceRegistry sharedServices, LoggingServiceRegistry loggingServices, DaemonClientFactory daemonClientFactory,
                               BuildActionExecuter<BuildActionParameters> embeddedExecutor, PayloadSerializer payloadSerializer, JvmVersionDetector jvmVersionDetector) {
@@ -87,9 +91,30 @@ public class ProviderConnection {
     public void configure(ProviderConnectionParameters parameters) {
         LogLevel providerLogLevel = parameters.getVerboseLogging() ? LogLevel.DEBUG : LogLevel.INFO;
         LOGGER.debug("Configuring logging to level: {}", providerLogLevel);
-        LoggingManagerInternal loggingManager = loggingServices.newInstance(LoggingManagerInternal.class);
+        loggingManager = loggingServices.newInstance(LoggingManagerInternal.class);
         loggingManager.setLevelInternal(providerLogLevel);
         loggingManager.start();
+    }
+
+    public void attachSystemOutAndErr() {
+        if (stdOutListener == null) {
+            stdOutListener = new StreamBackedStandardOutputListener((Appendable) System.out);
+        }
+        loggingManager.addStandardOutputListener(stdOutListener);
+
+        if (stdErrListener == null) {
+            stdErrListener = new StreamBackedStandardOutputListener((Appendable) System.out);
+        }
+        loggingManager.addStandardErrorListener(stdErrListener);
+    }
+
+    public void detachSystemOutAndErr() {
+        if (stdErrListener != null) {
+            loggingManager.removeStandardOutputListener(stdOutListener);
+        }
+        if (stdOutListener != null) {
+            loggingManager.removeStandardErrorListener(stdErrListener);
+        }
     }
 
     public Object run(String modelName, BuildCancellationToken cancellationToken, ProviderOperationParameters providerParameters) {

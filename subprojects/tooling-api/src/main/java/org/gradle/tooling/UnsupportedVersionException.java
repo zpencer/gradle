@@ -25,7 +25,7 @@ import org.gradle.util.GradleVersion;
  */
 public class UnsupportedVersionException extends GradleConnectionException {
     private static final String UNSUPPORTED_MESSAGE = "Support for %s older than %s has been removed.%s You should upgrade your %s to version %s or later.";
-    private static final String DEPRECATION_WARNING = "Support for %s older than %s is deprecated and will be removed in %s.%s You should upgrade your %s.";
+    private static final String DEPRECATION_WARNING = "Support for %s older than %s is deprecated and will be removed in 5.0.%s You should upgrade your %s.";
 
     public static final GradleVersion MIN_PROVIDER_VERSION = GradleVersion.version("1.2");
 
@@ -34,8 +34,6 @@ public class UnsupportedVersionException extends GradleConnectionException {
     public static final GradleVersion MIN_CONSUMER_VERSION = GradleVersion.version("2.0");
 
     public static final GradleVersion MIN_LTS_CONSUMER_VERSION = GradleVersion.version("3.0");
-
-    public static final String DEPRECATION_DEADLINE_VERSION = "5.0";
 
     public UnsupportedVersionException(String message) {
         super(message);
@@ -53,8 +51,12 @@ public class UnsupportedVersionException extends GradleConnectionException {
         return new UnsupportedVersionException(createUnsupportedMessage(consumerVersion, MIN_CONSUMER_VERSION, "tooling API client"));
     }
 
-    public static void checkProviderVersion(GradleVersion providerVersion) {
-        checkVersion(providerVersion, MIN_PROVIDER_VERSION, MIN_LTS_PROVIDER_VERSION, "Gradle");
+    public static UnsupportedVersionException unsupportedProvider() {
+        return new UnsupportedVersionException(createUnsupportedMessage(null, MIN_PROVIDER_VERSION, "Gradle"));
+    }
+
+    public static void checkProviderVersion(String providerVersion) {
+        checkVersion(GradleVersion.version(providerVersion), MIN_PROVIDER_VERSION, MIN_LTS_PROVIDER_VERSION, "Gradle");
     }
 
     private static void checkVersion(GradleVersion current, GradleVersion minVersion, GradleVersion minLtsVersion, String description) {
@@ -79,6 +81,6 @@ public class UnsupportedVersionException extends GradleConnectionException {
     }
 
     private static String createDeprecationMessage(GradleVersion currentVersion, GradleVersion minLtsVersion, String description) {
-        return String.format(DEPRECATION_WARNING, description, minLtsVersion.toString(), DEPRECATION_DEADLINE_VERSION, createCurrentVersionMessage(currentVersion), description);
+        return String.format(DEPRECATION_WARNING, description, minLtsVersion.getVersion(), createCurrentVersionMessage(currentVersion), description);
     }
 }

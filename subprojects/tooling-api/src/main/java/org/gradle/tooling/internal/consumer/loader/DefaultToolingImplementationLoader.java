@@ -39,7 +39,6 @@ import org.gradle.tooling.internal.consumer.connection.NonCancellableConsumerCon
 import org.gradle.tooling.internal.consumer.connection.ParameterValidatingConsumerConnection;
 import org.gradle.tooling.internal.consumer.connection.ShutdownAwareConsumerConnection;
 import org.gradle.tooling.internal.consumer.connection.TestExecutionConsumerConnection;
-import org.gradle.tooling.internal.consumer.connection.UnsupportedOlderVersionConnection;
 import org.gradle.tooling.internal.consumer.converters.ConsumerTargetTypeProvider;
 import org.gradle.tooling.internal.consumer.versioning.ModelMapping;
 import org.gradle.tooling.internal.protocol.BuildActionRunner;
@@ -50,12 +49,10 @@ import org.gradle.tooling.internal.protocol.InternalCancellableConnection;
 import org.gradle.tooling.internal.protocol.ModelBuilder;
 import org.gradle.tooling.internal.protocol.StoppableConnection;
 import org.gradle.tooling.internal.protocol.test.InternalTestExecutionConnection;
-import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.net.URL;
 
 public class DefaultToolingImplementationLoader implements ToolingImplementationLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultToolingImplementationLoader.class);
@@ -74,8 +71,6 @@ public class DefaultToolingImplementationLoader implements ToolingImplementation
         ClassLoader serviceClassLoader = createImplementationClassLoader(distribution, progressLoggerFactory, progressListener, connectionParameters.getGradleUserHomeDir(), cancellationToken);
         ServiceLocator serviceLocator = new DefaultServiceLocator(serviceClassLoader);
         try {
-            checkImplementationVersion(serviceClassLoader);
-
             Factory<ConnectionVersion4> factory = serviceLocator.findFactory(ConnectionVersion4.class);
             if (factory == null) {
                 return new NoToolingApiConnection(distribution);
@@ -88,7 +83,7 @@ public class DefaultToolingImplementationLoader implements ToolingImplementation
 
             // Adopting the connection to a refactoring friendly type that the consumer owns
             AbstractConsumerConnection adaptedConnection;
-            if (connection instanceof InternalTestExecutionConnection){
+            if (connection instanceof InternalTestExecutionConnection) {
                 adaptedConnection = new TestExecutionConsumerConnection(connection, modelMapping, adapter);
             } else if (connection instanceof StoppableConnection) {
                 adaptedConnection = new ShutdownAwareConsumerConnection(connection, modelMapping, adapter);
@@ -101,8 +96,11 @@ public class DefaultToolingImplementationLoader implements ToolingImplementation
             } else if (connection instanceof BuildActionRunner) {
                 adaptedConnection = new BuildActionRunnerBackedConsumerConnection(connection, modelMapping, adapter);
             } else {
-                return new UnsupportedOlderVersionConnection(connection, adapter);
+                throw UnsupportedVersionException.unsupportedProvider();
             }
+
+            checkVersion(adaptedConnection);
+
             adaptedConnection.configure(connectionParameters);
             if (!adaptedConnection.getVersionDetails().supportsCancellation()) {
                 return new ParameterValidatingConsumerConnection(adaptedConnection.getVersionDetails(), new NonCancellableConsumerConnectionAdapter(adaptedConnection));
@@ -115,12 +113,8 @@ public class DefaultToolingImplementationLoader implements ToolingImplementation
         }
     }
 
-    private void checkImplementationVersion(ClassLoader classLoader) throws ClassNotFoundException {
-        Class clazz = classLoader.loadClass("org.gradle.util.GradleVersion");
-        URL url = clazz.getResource(GradleVersion.RESOURCE_NAME);
-        // build-receipt.properties since 1.1
-        GradleVersion providerVersion = url == null ? null : GradleVersion.load(url);
-        UnsupportedVersionException.checkProviderVersion(providerVersion);
+    private void checkVersion(AbstractConsumerConnection connection) {
+        UnsupportedVersionException.checkProviderVersion(connection.getVersionDetails().getVersion());
     }
 
     private ClassLoader createImplementationClassLoader(Distribution distribution, ProgressLoggerFactory progressLoggerFactory, InternalBuildProgressListener progressListener, File userHomeDir, BuildCancellationToken cancellationToken) {

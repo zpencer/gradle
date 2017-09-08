@@ -37,6 +37,6 @@ class GradleRunnerUnsupportedGradleVersionFailureIntegrationTest extends BaseGra
 
         then:
         def e = thrown UnsupportedVersionException
-        e.message == "Support for Gradle older than ${MIN_PROVIDER_VERSION.version} has been removed. You are currently using 1.1. You should upgrade your Gradle to version ${MIN_PROVIDER_VERSION.version} or later."
+        e.message == "Support for Gradle older than ${MIN_PROVIDER_VERSION.version} has been removed. You should upgrade your Gradle to version ${MIN_PROVIDER_VERSION.version} or later."
     }
 }

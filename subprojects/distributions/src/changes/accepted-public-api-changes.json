@@ -18,12 +18,17 @@
         },
         {
             "type": "org.gradle.tooling.UnsupportedVersionException",
-            "member": "Method org.gradle.tooling.UnsupportedVersionException.checkProviderVersion(org.gradle.util.GradleVersion)",
+            "member": "Method org.gradle.tooling.UnsupportedVersionException.unsupportedConsumerVersion(org.gradle.util.GradleVersion)",
             "acceptation": "Internal usage"
         },
         {
             "type": "org.gradle.tooling.UnsupportedVersionException",
-            "member": "Method org.gradle.tooling.UnsupportedVersionException.unsupportedConsumerVersion(org.gradle.util.GradleVersion)",
+            "member": "Method org.gradle.tooling.UnsupportedVersionException.unsupportedProvider()",
+            "acceptation": "Internal usage"
+        },
+        {
+            "type": "org.gradle.tooling.UnsupportedVersionException",
+            "member": "Method org.gradle.tooling.UnsupportedVersionException.checkProviderVersion(java.lang.String)",
             "acceptation": "Internal usage"
         }
     ]

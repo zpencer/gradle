@@ -62,7 +62,7 @@ abstract class AbstractMavenPublishAction implements MavenPublishAction {
         container = newPlexusContainer(wagonJars);
         session = new MavenRepositorySystemSession();
         session.setTransferListener(new LoggingMavenTransferListener());
-        session.getConfigProperties().put("maven.metadata.legacy", "true");
+        session.getConfigProperties().put("maven.metadata.legacy", "false");
 
         Model pom = parsePom(pomFile);
         pomArtifact = new DefaultArtifact(pom.getGroupId(), pom.getArtifactId(), "pom", pom.getVersion()).setFile(pomFile);

@@ -16,28 +16,33 @@
 
 package org.gradle.api.internal.tasks;
 
+import com.google.common.util.concurrent.Callables;
 import org.gradle.api.internal.file.CompositeFileCollection;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.internal.file.collections.FileCollectionResolveContext;
+
+import java.util.concurrent.Callable;
+
+import static org.gradle.util.GUtil.uncheckedCall;
 
 public class TaskPropertyFileCollection extends CompositeFileCollection {
     private final String taskName;
     private final String type;
     private final TaskFilePropertySpec property;
     private final FileResolver resolver;
-    private final Object paths;
+    private final Callable<Object> paths;
     private String displayName;
 
     public TaskPropertyFileCollection(String taskName, String type, TaskFilePropertySpec property, FileResolver resolver, Object paths) {
+        this(taskName, type, property, resolver, Callables.returning(paths));
+    }
+
+    public TaskPropertyFileCollection(String taskName, String type, TaskFilePropertySpec property, FileResolver resolver, Callable<Object> paths) {
         this.taskName = taskName;
         this.type = type;
         this.property = property;
         this.resolver = resolver;
         this.paths = paths;
-    }
-
-    public Object getPaths() {
-        return paths;
     }
 
     @Override
@@ -50,6 +55,6 @@ public class TaskPropertyFileCollection extends CompositeFileCollection {
 
     @Override
     public void visitContents(FileCollectionResolveContext context) {
-        context.push(resolver).add(paths);
+        context.push(resolver).add(uncheckedCall(paths));
     }
 }

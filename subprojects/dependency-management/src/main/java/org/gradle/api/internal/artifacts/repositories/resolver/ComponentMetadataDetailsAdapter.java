@@ -17,15 +17,21 @@ package org.gradle.api.internal.artifacts.repositories.resolver;
 
 import org.gradle.api.artifacts.ComponentMetadataDetails;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.internal.artifacts.dsl.dependencies.DependencyFactory;
+import org.gradle.api.internal.artifacts.ivyservice.moduleconverter.dependencies.DependencyDescriptorFactory;
 import org.gradle.internal.component.external.model.AbstractMutableModuleComponentResolveMetadata;
 
 import java.util.List;
 
 public class ComponentMetadataDetailsAdapter implements ComponentMetadataDetails {
     private final AbstractMutableModuleComponentResolveMetadata metadata;
+    private final DependencyFactory dependencyFactory;
+    private final DependencyDescriptorFactory dependencyDescriptorFactory;
 
-    public ComponentMetadataDetailsAdapter(AbstractMutableModuleComponentResolveMetadata metadata) {
+    public ComponentMetadataDetailsAdapter(AbstractMutableModuleComponentResolveMetadata metadata, DependencyFactory dependencyFactory, DependencyDescriptorFactory dependencyDescriptorFactory) {
         this.metadata = metadata;
+        this.dependencyFactory = dependencyFactory;
+        this.dependencyDescriptorFactory = dependencyDescriptorFactory;
     }
 
     public ModuleVersionIdentifier getId() {

@@ -28,6 +28,7 @@ import org.gradle.internal.component.model.DependencyMetadata;
 import org.gradle.internal.component.model.IvyArtifactName;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,8 +42,8 @@ public class DefaultMutableIvyModuleResolveMetadata extends AbstractMutableModul
             ImmutableList.<DependencyMetadata>of());
     }
 
-    public DefaultMutableIvyModuleResolveMetadata(ModuleVersionIdentifier id, ModuleComponentIdentifier componentIdentifier, ModuleDescriptorState descriptor, Collection<Configuration> configurations, Collection<? extends DependencyMetadata> dependencies) {
-        super(id, componentIdentifier, descriptor, toMap(configurations), ImmutableList.copyOf(dependencies));
+    public DefaultMutableIvyModuleResolveMetadata(ModuleVersionIdentifier id, ModuleComponentIdentifier componentIdentifier, ModuleDescriptorState descriptor, Collection<Configuration> configurations, List<? extends DependencyMetadata> dependencies) {
+        super(id, componentIdentifier, descriptor, toMap(configurations), dependencies);
     }
 
     private static Map<String, Configuration> toMap(Collection<Configuration> configurations) {

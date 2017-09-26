@@ -26,7 +26,7 @@ import org.gradle.internal.component.model.DependencyMetadata;
 import org.gradle.internal.component.model.IvyArtifactName;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import static org.gradle.internal.component.external.model.DefaultMavenModuleResolveMetadata.JAR_PACKAGINGS;
@@ -44,12 +44,12 @@ public class DefaultMutableMavenModuleResolveMetadata extends AbstractMutableMod
         this(id, componentIdentifier, MutableModuleDescriptorState.createModuleDescriptor(componentIdentifier, artifacts), "jar", false, ImmutableList.<DependencyMetadata>of());
     }
 
-    public DefaultMutableMavenModuleResolveMetadata(ModuleVersionIdentifier id, ModuleDescriptorState moduleDescriptor, String packaging, boolean relocated, Collection<DependencyMetadata> dependencies) {
+    public DefaultMutableMavenModuleResolveMetadata(ModuleVersionIdentifier id, ModuleDescriptorState moduleDescriptor, String packaging, boolean relocated, List<DependencyMetadata> dependencies) {
         this(id, moduleDescriptor.getComponentIdentifier(), moduleDescriptor, packaging, relocated, dependencies);
     }
 
-    public DefaultMutableMavenModuleResolveMetadata(ModuleVersionIdentifier id, ModuleComponentIdentifier componentIdentifier, ModuleDescriptorState descriptor, String packaging, boolean relocated, Collection<? extends DependencyMetadata> dependencies) {
-        super(id, componentIdentifier, descriptor, GradlePomModuleDescriptorBuilder.MAVEN2_CONFIGURATIONS, ImmutableList.copyOf(dependencies));
+    public DefaultMutableMavenModuleResolveMetadata(ModuleVersionIdentifier id, ModuleComponentIdentifier componentIdentifier, ModuleDescriptorState descriptor, String packaging, boolean relocated, List<? extends DependencyMetadata> dependencies) {
+        super(id, componentIdentifier, descriptor, GradlePomModuleDescriptorBuilder.MAVEN2_CONFIGURATIONS, dependencies);
         this.packaging = packaging;
         this.relocated = relocated;
     }

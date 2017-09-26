@@ -26,6 +26,7 @@ import org.gradle.api.internal.artifacts.DefaultModuleIdentifier
 import org.gradle.api.internal.artifacts.DefaultModuleVersionIdentifier
 import org.gradle.api.internal.artifacts.ImmutableModuleIdentifierFactory
 import org.gradle.api.internal.artifacts.ivyservice.NamespaceId
+import org.gradle.api.internal.artifacts.ivyservice.moduleconverter.dependencies.DependencyDescriptorFactory
 import org.gradle.api.specs.Specs
 import org.gradle.internal.component.external.model.DefaultModuleComponentIdentifier
 import org.gradle.internal.component.external.model.DefaultMutableIvyModuleResolveMetadata
@@ -47,9 +48,9 @@ class DefaultComponentMetadataHandlerTest extends Specification {
     private static final String MODULE = "module"
 
     // For testing ComponentMetadataHandler capabilities
-    def handler = new DefaultComponentMetadataHandler(DirectInstantiator.INSTANCE, moduleIdentifierFactory)
+    def handler = new DefaultComponentMetadataHandler(DirectInstantiator.INSTANCE, moduleIdentifierFactory, Mock(DependencyDescriptorFactory))
     RuleActionAdapter<ComponentMetadataDetails> adapter = Mock(RuleActionAdapter)
-    def mockedHandler = new DefaultComponentMetadataHandler(DirectInstantiator.INSTANCE, adapter, moduleIdentifierFactory)
+    def mockedHandler = new DefaultComponentMetadataHandler(DirectInstantiator.INSTANCE, adapter, moduleIdentifierFactory, Mock(DependencyDescriptorFactory))
     def ruleAction = Stub(RuleAction)
 
     def "does nothing when no rules registered"() {

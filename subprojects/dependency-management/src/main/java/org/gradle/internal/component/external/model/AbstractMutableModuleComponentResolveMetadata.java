@@ -18,6 +18,7 @@ package org.gradle.internal.component.external.model;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.internal.artifacts.DefaultModuleVersionIdentifier;
@@ -43,7 +44,7 @@ import java.util.Set;
 
 import static org.gradle.internal.component.model.ComponentResolveMetadata.DEFAULT_STATUS_SCHEME;
 
-abstract class AbstractMutableModuleComponentResolveMetadata implements MutableModuleComponentResolveMetadata {
+public abstract class AbstractMutableModuleComponentResolveMetadata implements MutableModuleComponentResolveMetadata {
     public static final HashValue EMPTY_CONTENT = HashUtil.createHash("", "MD5");
     private ModuleComponentIdentifier componentId;
     private ModuleVersionIdentifier id;
@@ -52,7 +53,7 @@ abstract class AbstractMutableModuleComponentResolveMetadata implements MutableM
     private String status = "integration";
     private List<String> statusScheme = DEFAULT_STATUS_SCHEME;
     private ModuleSource moduleSource;
-    private List<? extends DependencyMetadata> dependencies;
+    private List<DependencyMetadata> dependencies;
     private HashValue contentHash = EMPTY_CONTENT;
     @Nullable
     private List<? extends ModuleComponentArtifactMetadata> artifactOverrides;
@@ -61,7 +62,7 @@ abstract class AbstractMutableModuleComponentResolveMetadata implements MutableM
     protected AbstractMutableModuleComponentResolveMetadata(ModuleVersionIdentifier id, ModuleComponentIdentifier componentIdentifier, List<? extends DependencyMetadata> dependencies) {
         this.componentId = componentIdentifier;
         this.id = id;
-        this.dependencies = dependencies;
+        this.dependencies = Lists.newArrayList(dependencies);
     }
 
     protected AbstractMutableModuleComponentResolveMetadata(ModuleComponentResolveMetadata metadata) {
@@ -73,7 +74,7 @@ abstract class AbstractMutableModuleComponentResolveMetadata implements MutableM
         this.statusScheme = metadata.getStatusScheme();
         this.moduleSource = metadata.getSource();
         this.artifactOverrides = metadata.getArtifactOverrides();
-        this.dependencies = metadata.getDependencies();
+        this.dependencies = Lists.newArrayList(metadata.getDependencies());
         this.contentHash = metadata.getContentHash();
     }
 
@@ -271,7 +272,7 @@ abstract class AbstractMutableModuleComponentResolveMetadata implements MutableM
     }
 
     @Override
-    public List<? extends DependencyMetadata> getDependencies() {
+    public List<DependencyMetadata> getDependencies() {
         return dependencies;
     }
 

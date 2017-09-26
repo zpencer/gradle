@@ -66,6 +66,12 @@ public abstract class AbstractExternalModuleDependency extends AbstractModuleDep
         return version;
     }
 
+    public ExternalModuleDependency setVersion(String version) {
+        validateMutation(this.version, version);
+        this.version = version;
+        return this;
+    }
+
     public boolean isForce() {
         return force;
     }

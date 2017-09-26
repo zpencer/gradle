@@ -15,9 +15,11 @@
  */
 package org.gradle.api.artifacts;
 
+import org.gradle.api.Action;
 import org.gradle.api.Incubating;
 import org.gradle.api.NonExtensible;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -52,4 +54,40 @@ public interface ComponentMetadataDetails extends ComponentMetadata {
      * @param statusScheme the status scheme of the component
      */
     void setStatusScheme(List<String> statusScheme);
+
+    /**
+     * Remove a dependency from the component.
+     *
+     * @param dependencyNotation the dependency to remove (e.g. 'org.example:module1')
+     * @since 4.4
+     */
+    void removeDependency(Object dependencyNotation);
+
+    /**
+     * Add an additional dependency to the component. This can be used to add replacements for
+     * dependencies removed through one of the 'removeDependency' methods.
+     *
+     * @param dependencyNotation the dependency (e.g. 'org.example:module2')
+     * @since 4.4
+     */
+    void addDependency(Object dependencyNotation);
+
+    /**
+     * Add an additional dependency to the component. This can be used to add replacements for
+     * dependencies removed through one of the 'removeDependency' methods.
+     *
+     * @param dependencyNotation the dependency (e.g. 'org.example:module2')
+     * @param configureAction further configuration of the dependency (of type {@link ExternalModuleDependency}).
+     * @since 4.4
+     */
+    void addDependency(Object dependencyNotation, @Nullable Action<? super ExternalModuleDependency> configureAction);
+
+    /**
+     * Change properties (e.g. the version) of an existing dependency
+     *
+     * @param dependencyNotation the dependency (e.g. 'org.example:module2')
+     * @param configureAction configuration of the dependency (of type {@link ExternalModuleDependency}).
+     * @since 4.4
+     */
+    void updateDependency(Object dependencyNotation, final Action<? super ExternalModuleDependency> configureAction);
 }

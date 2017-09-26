@@ -18,6 +18,8 @@ package org.gradle.api.internal.notations;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.artifacts.ExternalModuleDependency;
+import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.ClassPathRegistry;
 import org.gradle.api.internal.artifacts.DefaultProjectDependencyFactory;
@@ -39,6 +41,16 @@ public class DependencyNotationParser {
             .fromType(FileCollection.class, new DependencyFilesNotationConverter(instantiator))
             .fromType(Project.class, new DependencyProjectNotationConverter(dependencyFactory))
             .fromType(DependencyFactory.ClassPathNotation.class, new DependencyClassPathNotationConverter(instantiator, classPathRegistry, fileLookup.getFileResolver(), runtimeShadedJarFactory, currentGradleInstallation))
+            .invalidNotationMessage("Comprehensive documentation on dependency notations is available in DSL reference for DependencyHandler type.")
+            .toComposite();
+    }
+
+    public static NotationParser<Object, ExternalModuleDependency> externalDependencyParser(Instantiator instantiator) {
+        return NotationParserBuilder
+            .toType(ExternalModuleDependency.class)
+            .fromCharSequence(new DependencyStringNotationConverter<DefaultExternalModuleDependency>(instantiator, DefaultExternalModuleDependency.class))
+            .converter(new DependencyMapNotationConverter<DefaultExternalModuleDependency>(instantiator, DefaultExternalModuleDependency.class))
+            .fromType(ModuleVersionIdentifier.class, new DependencyModuleVersionIdentifierNotationConverter())
             .invalidNotationMessage("Comprehensive documentation on dependency notations is available in DSL reference for DependencyHandler type.")
             .toComposite();
     }

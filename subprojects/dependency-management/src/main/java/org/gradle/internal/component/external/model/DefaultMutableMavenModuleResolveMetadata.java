@@ -34,7 +34,6 @@ import org.gradle.internal.component.model.VariantMetadata;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +62,7 @@ public class DefaultMutableMavenModuleResolveMetadata extends AbstractMutableMod
         this(id, componentIdentifier, ImmutableList.<DependencyMetadata>of());
     }
 
-    public DefaultMutableMavenModuleResolveMetadata(ModuleVersionIdentifier id, ModuleComponentIdentifier componentIdentifier, Collection<? extends DependencyMetadata> dependencies) {
+    public DefaultMutableMavenModuleResolveMetadata(ModuleVersionIdentifier id, ModuleComponentIdentifier componentIdentifier, List<? extends DependencyMetadata> dependencies) {
         super(id, componentIdentifier, ImmutableList.copyOf(dependencies));
     }
 

@@ -16,16 +16,17 @@
 
 package org.gradle.api.internal.artifacts.ivyservice.ivyresolve;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.gradle.api.UncheckedIOException;
+import org.gradle.internal.resource.transport.http.HttpErrorStatusCodeException;
 
-import java.io.InterruptedIOException;
-import java.util.HashSet;
+import java.io.IOException;
 import java.util.Set;
 
 public class ConnectionFailureRepositoryBlacklister implements RepositoryBlacklister {
 
-    private final Set<String> blacklistedRepositories = new HashSet<String>();
+    private final Set<String> blacklistedRepositories = Sets.newConcurrentHashSet();
 
     @Override
     public boolean isBlacklisted(String repositoryId) {
@@ -55,6 +56,9 @@ public class ConnectionFailureRepositoryBlacklister implements RepositoryBlackli
 
     private boolean isRootCauseIOException(Throwable throwable) {
         Throwable rootCause = ExceptionUtils.getRootCause(throwable);
-        return rootCause instanceof UncheckedIOException || rootCause instanceof InterruptedIOException;
+        if(rootCause instanceof HttpErrorStatusCodeException){
+            return false;
+        }
+        return rootCause instanceof IOException || rootCause instanceof UncheckedIOException;
     }
 }

@@ -16,7 +16,7 @@
 
 package org.gradle.api.internal.artifacts.ivyservice.ivyresolve
 
-import org.gradle.api.UncheckedIOException
+import org.gradle.internal.resource.transport.http.HttpErrorStatusCodeException
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
@@ -30,11 +30,11 @@ class ConnectionFailureRepositoryBlacklisterTest extends Specification {
         blacklister.blacklistedRepositories.empty
     }
 
-    @Unroll
-    def "blacklists repository for #type"() {
+    def "blacklists repository for normal IOException"() {
         given:
         def repositoryId1 = 'abc'
         def repositoryId2 = 'def'
+        def exception = createIOException('Read time out')
 
         when:
         boolean blacklisted = blacklister.blacklistRepository(repositoryId1, exception)
@@ -60,28 +60,29 @@ class ConnectionFailureRepositoryBlacklisterTest extends Specification {
         blacklister.blacklistedRepositories.size() == 2
         blacklister.blacklistedRepositories.contains(repositoryId1)
         blacklister.blacklistedRepositories.contains(repositoryId2)
-
-        where:
-        type                     | exception
-        'InterruptedIOException' | createNestedSocketTimeoutException('Read time out')
-        'UncheckedIOException'   | createNestedUncheckedIOException('Received status code 500 from server: broken')
     }
 
-    def "does not blacklist repository for other exception"() {
+    @Unroll
+    def "does not blacklist repository for #type"() {
         when:
-        boolean blacklisted = blacklister.blacklistRepository('abc', createNestedException(new NullPointerException()))
+        boolean blacklisted = blacklister.blacklistRepository('abc', exception)
 
         then:
         !blacklisted
         blacklister.blacklistedRepositories.empty
+
+        where:
+        type                            | exception
+        'NullPointerException'          | createNestedException(new NullPointerException())
+        'HttpErrorStatusCodeExceptiion' | createHttpErrorStatusCodeException('HTTP 500')
     }
 
-    static RuntimeException createNestedSocketTimeoutException(String message) {
-        createNestedException(new SocketTimeoutException(message))
+    static RuntimeException createHttpErrorStatusCodeException(String message) {
+        createNestedException(new HttpErrorStatusCodeException(message))
     }
 
-    static RuntimeException createNestedUncheckedIOException(String message) {
-        createNestedException(new UncheckedIOException(message))
+    static RuntimeException createIOException(String message) {
+        createNestedException(new IOException(message))
     }
 
     static RuntimeException createNestedException(Throwable t) {

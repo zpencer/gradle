@@ -113,6 +113,9 @@ public class DynamicVersionResolver implements DependencyToComponentIdResolver {
 
         // A first pass to do local resolves only
         RepositoryChainModuleResolution best = findLatestModule(queue, failures, missing);
+        if (!failures.isEmpty()) {
+            return null;
+        }
         if (best != null) {
             return best;
         }
@@ -135,8 +138,8 @@ public class DynamicVersionResolver implements DependencyToComponentIdResolver {
             }
             switch (request.resolvedVersionMetadata.getState()) {
                 case Failed:
-                case Unresolved:
                     failures.add(request.resolvedVersionMetadata.getFailure());
+                    queue.clear();
                     break;
                 case Missing:
                 case Unknown:
@@ -218,7 +221,6 @@ public class DynamicVersionResolver implements DependencyToComponentIdResolver {
             versionListingResult.resolve();
             switch (versionListingResult.result.getState()) {
                 case Failed:
-                case Unresolved:
                     resolvedVersionMetadata.failed(versionListingResult.result.getFailure());
                     break;
                 case Listed:
@@ -321,7 +323,7 @@ public class DynamicVersionResolver implements DependencyToComponentIdResolver {
                     searchedRemotely = true;
                 }
             }
-            if (result.getState() == Resolved || result.getState() == Failed || result.getState() == Unresolved) {
+            if (result.getState() == Resolved || result.getState() == Failed) {
                 return result;
             }
             if (!searchedRemotely) {
@@ -358,7 +360,6 @@ public class DynamicVersionResolver implements DependencyToComponentIdResolver {
                     target.missing();
                     break;
                 case Failed:
-                case Unresolved:
                     target.failed(result.getFailure());
                     break;
                 case Unknown:

@@ -64,13 +64,6 @@ public class DefaultBuildableModuleVersionListingResolveResult extends DefaultRe
         this.authoritative = true;
     }
 
-    @Override
-    public void unresolved(ModuleVersionResolveException failure) {
-        reset(State.Unresolved);
-        this.failure = failure;
-        this.authoritative = true;
-    }
-
     public boolean isAuthoritative() {
         assertHasResult();
         return authoritative;

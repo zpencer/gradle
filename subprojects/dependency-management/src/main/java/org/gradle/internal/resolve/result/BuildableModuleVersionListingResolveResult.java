@@ -33,17 +33,13 @@ public interface BuildableModuleVersionListingResolveResult extends ResourceAwar
          */
         Listed,
         /**
-         * Listing has failed due to some explicit reason.
+         * Listing has failed.
          */
         Failed,
         /**
          * Listing hasn't been performed yet, or another attempt can be made.
          */
-        Unknown,
-        /**
-         * Listing results couldn't be determined, e.g. timeout.
-         */
-        Unresolved
+        Unknown
     }
 
     /**
@@ -70,13 +66,6 @@ public interface BuildableModuleVersionListingResolveResult extends ResourceAwar
      * Marks the list as failed with the given exception.
      */
     void failed(ModuleVersionResolveException failure);
-
-    /**
-     * Marks the list as unresolved with the given exception.
-     * <p>
-     * A list is considered unresolved if presence of module in repository could not be determined.
-     */
-    void unresolved(ModuleVersionResolveException failure);
 
     /**
      * Returns true if the result is from an authoritative source. Defaults to true.

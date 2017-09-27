@@ -25,24 +25,24 @@ public class JavaSystemPropertiesHttpTimeoutSettings implements HttpTimeoutSetti
     private static final Logger LOGGER = LoggerFactory.getLogger(JavaSystemPropertiesHttpTimeoutSettings.class);
     public static final String CONNECTION_TIMEOUT_SYSTEM_PROPERTY = "http.connectionTimeout";
     public static final String SOCKET_TIMEOUT_SYSTEM_PROPERTY = "http.socketTimeout";
-    public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
-    public static final int DEFAULT_SOCKET_TIMEOUT = 30000;
-    private final int connectionTimeout;
-    private final int socketTimeout;
+    public static final int DEFAULT_CONNECTION_TIMEOUT_MS = 10000;
+    public static final int DEFAULT_SOCKET_TIMEOUT_MS = 30000;
+    private final int connectionTimeoutMs;
+    private final int socketTimeoutMs;
 
     public JavaSystemPropertiesHttpTimeoutSettings() {
-        this.connectionTimeout = initTimeout(CONNECTION_TIMEOUT_SYSTEM_PROPERTY, DEFAULT_CONNECTION_TIMEOUT);
-        this.socketTimeout = initTimeout(SOCKET_TIMEOUT_SYSTEM_PROPERTY, DEFAULT_SOCKET_TIMEOUT);
+        this.connectionTimeoutMs = initTimeout(CONNECTION_TIMEOUT_SYSTEM_PROPERTY, DEFAULT_CONNECTION_TIMEOUT_MS);
+        this.socketTimeoutMs = initTimeout(SOCKET_TIMEOUT_SYSTEM_PROPERTY, DEFAULT_SOCKET_TIMEOUT_MS);
     }
 
     @Override
-    public int getConnectionTimeout() {
-        return connectionTimeout;
+    public int getConnectionTimeoutMs() {
+        return connectionTimeoutMs;
     }
 
     @Override
-    public int getSocketTimeout() {
-        return socketTimeout;
+    public int getSocketTimeoutMs() {
+        return socketTimeoutMs;
     }
 
     private int initTimeout(String propertyName, int defaultValue) {

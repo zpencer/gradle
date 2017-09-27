@@ -350,7 +350,6 @@ public class CachingModuleComponentRepository implements ModuleComponentReposito
                     moduleVersionsCache.cacheModuleVersionList(delegate, moduleId, versionList);
                     break;
                 case Failed:
-                case Unresolved:
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state on listModuleVersions: " + result.getState());
@@ -376,7 +375,6 @@ public class CachingModuleComponentRepository implements ModuleComponentReposito
                     result.resolved(metaData);
                     break;
                 case Failed:
-                case Unresolved:
                     break;
                 default:
                     throw new IllegalStateException("Unexpected resolve state: " + result.getState());

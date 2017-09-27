@@ -194,6 +194,27 @@ class DependencyUnresolvedModuleIntegrationTest extends AbstractHttpDependencyRe
         !downloadedLibsDir.isDirectory()
     }
 
+    def "fails build if HTTP connection exceeds timeout when resolving dynamic version"() {
+        given:
+        MavenHttpRepository backupMavenHttpRepo = new MavenHttpRepository(server, '/repo-2', new MavenFileRepository(file('maven-repo-2')))
+        publishMavenModule(backupMavenHttpRepo, 'a')
+
+        buildFile << """
+            ${mavenRepository(mavenHttpRepo)}
+            ${mavenRepository(backupMavenHttpRepo)}
+            ${customConfigDependencyAssignment('group:a:1.+')}
+            ${configSyncTask()}
+        """
+
+        when:
+        mavenHttpRepo.getModuleMetaData('group','a').expectGetBlocking()
+        fails('resolve')
+
+        then:
+        assertDependencyListingReadTimeout('group','a','1.+')
+        !downloadedLibsDir.isDirectory()
+    }
+
     def "fails build if HTTP connection returns internal server error when resolving metadata"() {
         given:
         MavenHttpRepository backupMavenHttpRepo = new MavenHttpRepository(server, '/repo-2', new MavenFileRepository(file('maven-repo-2')))
@@ -237,6 +258,27 @@ class DependencyUnresolvedModuleIntegrationTest extends AbstractHttpDependencyRe
         !downloadedLibsDir.isDirectory()
     }
 
+    def "fails build if HTTP connection returns internal server error when resolving dynamic version"() {
+        given:
+        MavenHttpRepository backupMavenHttpRepo = new MavenHttpRepository(server, '/repo-2', new MavenFileRepository(file('maven-repo-2')))
+        publishMavenModule(backupMavenHttpRepo, 'a')
+
+        buildFile << """
+            ${mavenRepository(mavenHttpRepo)}
+            ${mavenRepository(backupMavenHttpRepo)}
+            ${customConfigDependencyAssignment('group:a:1.+')}
+            ${configSyncTask()}
+        """
+
+        when:
+        mavenHttpRepo.getModuleMetaData('group','a').expectGetBroken()
+        fails('resolve')
+
+        then:
+        assertDependencyListingInternalServerError('group','a','1.+')
+        !downloadedLibsDir.isDirectory()
+    }
+
     private String mavenRepository(MavenRepository repo) {
         """
             repositories {
@@ -245,16 +287,20 @@ class DependencyUnresolvedModuleIntegrationTest extends AbstractHttpDependencyRe
         """
     }
 
-    private String customConfigDependencyAssignment(MavenHttpModule... modules) {
+    private String customConfigDependencyAssignment(String... modules) {
         """
             configurations {
                 deps
             }
             
             dependencies {
-                deps ${modules.collect { "'${mavenModuleCoordinates(it)}'" }.join(', ')}
+                deps ${modules.collect {"'${it}'"}.join(', ')}
             }
         """
+    }
+
+    private String customConfigDependencyAssignment(MavenHttpModule... modules) {
+        customConfigDependencyAssignment(modules.collect { "${mavenModuleCoordinates(it)}" } as String[])
     }
 
     private String configSyncTask() {
@@ -264,6 +310,23 @@ class DependencyUnresolvedModuleIntegrationTest extends AbstractHttpDependencyRe
                 into "\$buildDir/libs"
             }
         """
+    }
+
+    private void assertDependencyListingReadTimeout(String group, String module, String version) {
+        failure.assertHasCause("Could not resolve ${group}:${module}:${version}.")
+        failure.assertHasCause("Failed to list versions for ${group}:${module}.")
+        failure.assertHasCause("Could not get resource '${mavenHttpRepo.uri.toString()}/${group}/${module}/maven-metadata.xml'.")
+        failure.assertHasCause("Unable to load Maven meta-data from ${mavenHttpRepo.uri.toString()}/${group}/${module}/maven-metadata.xml.")
+        failure.assertHasCause("Could not GET '${mavenHttpRepo.uri.toString()}/${group}/${module}/maven-metadata.xml'.")
+        failure.assertHasCause("Read timed out")
+    }
+
+    private void assertDependencyListingInternalServerError(String group, String module, String version) {
+        failure.assertHasCause("Could not resolve ${group}:${module}:${version}.")
+        failure.assertHasCause("Failed to list versions for ${group}:${module}.")
+        failure.assertHasCause("Could not get resource '${mavenHttpRepo.uri.toString()}/${group}/${module}/maven-metadata.xml'.")
+        failure.assertHasCause("Unable to load Maven meta-data from ${mavenHttpRepo.uri.toString()}/${group}/${module}/maven-metadata.xml.")
+        failure.assertHasCause("Could not GET '${mavenHttpRepo.uri.toString()}/${group}/${module}/maven-metadata.xml'. Received status code 500 from server: broken")
     }
 
     private void assertDependencyMetaDataReadTimeout(MavenModule module) {

@@ -18,6 +18,7 @@ package org.gradle.internal.component.external.model;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.internal.artifacts.DefaultModuleVersionIdentifier;
@@ -64,7 +65,7 @@ public abstract class AbstractMutableModuleComponentResolveMetadata implements M
         this.status = metadata.getStatus();
         this.statusScheme = metadata.getStatusScheme();
         this.moduleSource = metadata.getSource();
-        this.configurationDefinitions = metadata.getConfigurationDefinitions();
+        this.configurationDefinitions = Maps.newHashMap(metadata.getConfigurationDefinitions());
         this.artifacts = metadata.getArtifacts();
         this.dependencies = Lists.newArrayList(metadata.getDependencies());
     }

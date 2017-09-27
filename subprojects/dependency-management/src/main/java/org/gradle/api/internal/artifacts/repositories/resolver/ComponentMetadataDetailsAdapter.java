@@ -18,20 +18,24 @@ package org.gradle.api.internal.artifacts.repositories.resolver;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import groovy.lang.Closure;
+import org.gradle.api.Action;
 import org.gradle.api.artifacts.ClientModule;
 import org.gradle.api.artifacts.ComponentMetadataDetails;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.ModuleVersionSelector;
+import org.gradle.api.attributes.AttributeContainer;
 import org.gradle.api.internal.artifacts.DefaultModuleVersionIdentifier;
 import org.gradle.api.internal.artifacts.dsl.dependencies.DependencyFactory;
 import org.gradle.api.internal.artifacts.ivyservice.moduleconverter.dependencies.DependencyDescriptorFactory;
+import org.gradle.api.internal.attributes.DefaultMutableAttributeContainer;
 import org.gradle.api.internal.attributes.ImmutableAttributes;
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
+import org.gradle.internal.component.external.descriptor.Configuration;
 import org.gradle.internal.component.external.model.AbstractMutableModuleComponentResolveMetadata;
 import org.gradle.internal.component.model.DependencyMetadata;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -39,11 +43,13 @@ public class ComponentMetadataDetailsAdapter implements ComponentMetadataDetails
     private final AbstractMutableModuleComponentResolveMetadata metadata;
     private final DependencyFactory dependencyFactory;
     private final DependencyDescriptorFactory dependencyDescriptorFactory;
+    private final ImmutableAttributesFactory attributesFactory;
 
-    public ComponentMetadataDetailsAdapter(AbstractMutableModuleComponentResolveMetadata metadata, DependencyFactory dependencyFactory, DependencyDescriptorFactory dependencyDescriptorFactory) {
+    public ComponentMetadataDetailsAdapter(AbstractMutableModuleComponentResolveMetadata metadata, DependencyFactory dependencyFactory, DependencyDescriptorFactory dependencyDescriptorFactory, ImmutableAttributesFactory attributesFactory) {
         this.metadata = metadata;
         this.dependencyFactory = dependencyFactory;
         this.dependencyDescriptorFactory = dependencyDescriptorFactory;
+        this.attributesFactory = attributesFactory;
     }
 
     public ModuleVersionIdentifier getId() {
@@ -81,6 +87,13 @@ public class ComponentMetadataDetailsAdapter implements ComponentMetadataDetails
 
     public void setStatusScheme(List<String> statusScheme) {
         metadata.setStatusScheme(statusScheme);
+    }
+
+    @Override
+    public void addConfiguration(String name, Action<? super ComponentMetadataConfiguration> action) {
+        ComponentMetadataConfiguration componentMetadataConfiguration = new ComponentMetadataConfigurationAdapter();
+        action.execute(componentMetadataConfiguration);
+        metadata.getConfigurationDefinitions().put(name, new Configuration(name, false, false, componentMetadataConfiguration.getExtendsFrom(), componentMetadataConfiguration.getAttributes()));
     }
 
     public void removeAllDependencies(String configurationName) {
@@ -123,5 +136,25 @@ public class ComponentMetadataDetailsAdapter implements ComponentMetadataDetails
 
     private boolean nullOrEquals(String toMatch, String other) {
         return toMatch == null || toMatch.equals(other);
+    }
+
+    private class ComponentMetadataConfigurationAdapter implements ComponentMetadataConfiguration {
+        private final AttributeContainer attributes = new DefaultMutableAttributeContainer(attributesFactory);
+        private final List<String> extendsFrom = Lists.newArrayList();
+
+        @Override
+        public AttributeContainer getAttributes() {
+            return attributes;
+        }
+
+        @Override
+        public List<String> getExtendsFrom() {
+            return extendsFrom;
+        }
+
+        @Override
+        public void extendsFrom(String configurationName) {
+            extendsFrom.add(configurationName);
+        }
     }
 }

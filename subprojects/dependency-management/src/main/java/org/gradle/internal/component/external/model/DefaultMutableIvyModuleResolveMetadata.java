@@ -17,8 +17,8 @@
 package org.gradle.internal.component.external.model;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.internal.component.external.descriptor.Configuration;
@@ -47,11 +47,11 @@ public class DefaultMutableIvyModuleResolveMetadata extends AbstractMutableModul
     }
 
     private static Map<String, Configuration> toMap(Collection<Configuration> configurations) {
-        ImmutableMap.Builder<String, Configuration> builder = ImmutableMap.builder();
+        Map<String, Configuration> map = Maps.newHashMap();
         for (Configuration configuration : configurations) {
-            builder.put(configuration.getName(), configuration);
+            map.put(configuration.getName(), configuration);
         }
-        return builder.build();
+        return map;
     }
 
     public DefaultMutableIvyModuleResolveMetadata(ModuleComponentResolveMetadata metadata) {

@@ -16,8 +16,10 @@
 package org.gradle.api.artifacts;
 
 import groovy.lang.Closure;
+import org.gradle.api.Action;
 import org.gradle.api.Incubating;
 import org.gradle.api.NonExtensible;
+import org.gradle.api.attributes.HasAttributes;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -54,6 +56,8 @@ public interface ComponentMetadataDetails extends ComponentMetadata {
      * @param statusScheme the status scheme of the component
      */
     void setStatusScheme(List<String> statusScheme);
+
+    void addConfiguration(String name, Action<? super ComponentMetadataConfiguration> action);
 
     /**
      * Removes all dependencies from the component. This is useful to resolve version conflicts
@@ -103,4 +107,9 @@ public interface ComponentMetadataDetails extends ComponentMetadata {
      * @since 4.3
      */
     void addDependency(String configurationName, Object dependencyNotation, @Nullable Closure configureClosure);
+
+    interface ComponentMetadataConfiguration extends HasAttributes {
+        List<String> getExtendsFrom();
+        void extendsFrom(String configurationName);
+    }
 }

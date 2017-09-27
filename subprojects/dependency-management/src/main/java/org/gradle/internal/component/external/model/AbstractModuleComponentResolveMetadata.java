@@ -21,12 +21,12 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
+import org.gradle.api.attributes.AttributeContainer;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.excludes.ModuleExclusion;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.excludes.ModuleExclusions;
 import org.gradle.api.internal.attributes.AttributeContainerInternal;
 import org.gradle.api.internal.attributes.AttributesSchemaInternal;
 import org.gradle.api.internal.attributes.EmptySchema;
-import org.gradle.api.internal.attributes.ImmutableAttributes;
 import org.gradle.internal.Describables;
 import org.gradle.internal.DisplayName;
 import org.gradle.internal.component.external.descriptor.Artifact;
@@ -64,6 +64,8 @@ abstract class AbstractModuleComponentResolveMetadata implements ModuleComponent
     private final ModuleSource moduleSource;
     private final Map<String, Configuration> configurationDefinitions;
     private final Map<String, DefaultConfigurationMetadata> configurations;
+    @Nullable
+    private List<DefaultConfigurationMetadata> consumableConfigurations;
     @Nullable
     private final List<ModuleComponentArtifactMetadata> artifacts;
     private final List<? extends DependencyMetadata> dependencies;
@@ -156,8 +158,16 @@ abstract class AbstractModuleComponentResolveMetadata implements ModuleComponent
     }
 
     @Override
-    public List<? extends ConfigurationMetadata> getConsumableConfigurationsHavingAttributes() {
-        return Collections.emptyList();
+    public synchronized List<? extends ConfigurationMetadata> getConsumableConfigurationsHavingAttributes() {
+        if (consumableConfigurations == null) {
+            consumableConfigurations = Lists.newArrayListWithExpectedSize(configurations.size());
+            for (DefaultConfigurationMetadata metadata : configurations.values()) {
+                if (metadata.isCanBeConsumed() && !metadata.getAttributes().isEmpty()) {
+                    consumableConfigurations.add(metadata);
+                }
+            }
+        }
+        return consumableConfigurations;
     }
 
     @Override
@@ -231,9 +241,10 @@ abstract class AbstractModuleComponentResolveMetadata implements ModuleComponent
         List<String> extendsFrom = descriptorConfiguration.getExtendsFrom();
         boolean transitive = descriptorConfiguration.isTransitive();
         boolean visible = descriptorConfiguration.isVisible();
+        AttributeContainerInternal attributes = descriptorConfiguration.getAttributes();
         if (extendsFrom.isEmpty()) {
             // tail
-            populated = new DefaultConfigurationMetadata(componentIdentifier, name, transitive, visible, excludes);
+            populated = new DefaultConfigurationMetadata(componentIdentifier, name, transitive, visible, attributes, excludes);
             configurations.put(name, populated);
             return populated;
         } else if (extendsFrom.size() == 1) {
@@ -242,6 +253,7 @@ abstract class AbstractModuleComponentResolveMetadata implements ModuleComponent
                 name,
                 transitive,
                 visible,
+                attributes,
                 Collections.singletonList(populateConfigurationFromDescriptor(extendsFrom.get(0), configurationDefinitions, configurations)),
                 excludes
             );
@@ -257,6 +269,7 @@ abstract class AbstractModuleComponentResolveMetadata implements ModuleComponent
             name,
             transitive,
             visible,
+            attributes,
             hierarchy,
             excludes
         );
@@ -275,20 +288,22 @@ abstract class AbstractModuleComponentResolveMetadata implements ModuleComponent
         private final boolean visible;
         private final List<String> hierarchy;
         private final List<Exclude> excludes;
+        private final AttributeContainerInternal attributes;
         private ModuleExclusion exclusions;
 
-        private DefaultConfigurationMetadata(ModuleComponentIdentifier componentId, String name, boolean transitive, boolean visible, List<DefaultConfigurationMetadata> parents, List<Exclude> excludes) {
+        private DefaultConfigurationMetadata(ModuleComponentIdentifier componentId, String name, boolean transitive, boolean visible, AttributeContainerInternal attributes, List<DefaultConfigurationMetadata> parents, List<Exclude> excludes) {
             this.componentId = componentId;
             this.name = name;
             this.parents = parents;
             this.transitive = transitive;
             this.visible = visible;
+            this.attributes = attributes;
             this.hierarchy = calculateHierarchy();
             this.excludes = excludes;
         }
 
-        private DefaultConfigurationMetadata(ModuleComponentIdentifier componentId, String name, boolean transitive, boolean visible, List<Exclude> excludes) {
-            this(componentId, name, transitive, visible, null, excludes);
+        private DefaultConfigurationMetadata(ModuleComponentIdentifier componentId, String name, boolean transitive, boolean visible, AttributeContainerInternal attributes, List<Exclude> excludes) {
+            this(componentId, name, transitive, visible, attributes, null, excludes);
         }
 
         @Override
@@ -341,7 +356,7 @@ abstract class AbstractModuleComponentResolveMetadata implements ModuleComponent
 
         @Override
         public AttributeContainerInternal getAttributes() {
-            return ImmutableAttributes.EMPTY;
+            return attributes;
         }
 
         @Override

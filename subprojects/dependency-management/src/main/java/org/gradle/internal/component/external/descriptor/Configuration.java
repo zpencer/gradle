@@ -16,6 +16,9 @@
 
 package org.gradle.internal.component.external.descriptor;
 
+import org.gradle.api.attributes.AttributeContainer;
+import org.gradle.api.internal.attributes.AttributeContainerInternal;
+import org.gradle.api.internal.attributes.ImmutableAttributes;
 import org.gradle.util.CollectionUtils;
 
 import java.util.Collection;
@@ -26,12 +29,19 @@ public class Configuration {
     private final boolean transitive;
     private final boolean visible;
     private final List<String> extendsFrom;
+    private final AttributeContainerInternal attributes;
+
 
     public Configuration(String name, boolean transitive, boolean visible, Collection<String> extendsFrom) {
+        this(name, transitive, visible, extendsFrom, ImmutableAttributes.EMPTY);
+    }
+
+    public Configuration(String name, boolean transitive, boolean visible, Collection<String> extendsFrom, AttributeContainer attributes) {
         this.name = name;
         this.transitive = transitive;
         this.visible = visible;
         this.extendsFrom = CollectionUtils.toList(extendsFrom);
+        this.attributes = (AttributeContainerInternal) attributes;
     }
 
     public String getName() {
@@ -48,5 +58,9 @@ public class Configuration {
 
     public List<String> getExtendsFrom() {
         return extendsFrom;
+    }
+
+    public AttributeContainerInternal getAttributes() {
+        return attributes;
     }
 }

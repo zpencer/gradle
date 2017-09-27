@@ -30,6 +30,7 @@ import org.gradle.api.internal.artifacts.dsl.dependencies.DependencyFactory;
 import org.gradle.api.internal.artifacts.ivyservice.DefaultIvyModuleDescriptor;
 import org.gradle.api.internal.artifacts.ivyservice.moduleconverter.dependencies.DependencyDescriptorFactory;
 import org.gradle.api.internal.artifacts.repositories.resolver.ComponentMetadataDetailsAdapter;
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
 import org.gradle.api.internal.notations.ModuleIdentifierNotationConverter;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
@@ -64,9 +65,10 @@ public class DefaultComponentMetadataHandler implements ComponentMetadataHandler
     private final NotationParser<Object, ModuleIdentifier> moduleIdentifierNotationParser;
     private final DependencyFactory dependencyFactory;
     private final DependencyDescriptorFactory dependencyDescriptorFactory;
+    private final ImmutableAttributesFactory attributesFactory;
 
     public DefaultComponentMetadataHandler(Instantiator instantiator, RuleActionAdapter<ComponentMetadataDetails> ruleActionAdapter, ImmutableModuleIdentifierFactory moduleIdentifierFactory,
-                                           DependencyFactory dependencyFactory, DependencyDescriptorFactory dependencyDescriptorFactory) {
+                                           DependencyFactory dependencyFactory, DependencyDescriptorFactory dependencyDescriptorFactory, ImmutableAttributesFactory attributesFactory) {
         this.instantiator = instantiator;
         this.ruleActionAdapter = ruleActionAdapter;
         this.moduleIdentifierNotationParser = NotationParserBuilder
@@ -75,11 +77,12 @@ public class DefaultComponentMetadataHandler implements ComponentMetadataHandler
             .toComposite();
         this.dependencyFactory = dependencyFactory;
         this.dependencyDescriptorFactory = dependencyDescriptorFactory;
+        this.attributesFactory = attributesFactory;
     }
 
     public DefaultComponentMetadataHandler(Instantiator instantiator, ImmutableModuleIdentifierFactory moduleIdentifierFactory,
-                                           DependencyFactory dependencyFactory, DependencyDescriptorFactory dependencyDescriptorFactory) {
-        this(instantiator, createAdapter(), moduleIdentifierFactory, dependencyFactory, dependencyDescriptorFactory);
+                                           DependencyFactory dependencyFactory, DependencyDescriptorFactory dependencyDescriptorFactory, ImmutableAttributesFactory attributesFactory) {
+        this(instantiator, createAdapter(), moduleIdentifierFactory, dependencyFactory, dependencyDescriptorFactory, attributesFactory);
     }
 
     private static RuleActionAdapter<ComponentMetadataDetails> createAdapter() {
@@ -139,7 +142,7 @@ public class DefaultComponentMetadataHandler implements ComponentMetadataHandler
             updatedMetadata = metadata;
         } else {
             MutableModuleComponentResolveMetadata mutableMetadata = metadata.asMutable();
-            ComponentMetadataDetails details = instantiator.newInstance(ComponentMetadataDetailsAdapter.class, mutableMetadata, dependencyFactory, dependencyDescriptorFactory);
+            ComponentMetadataDetails details = instantiator.newInstance(ComponentMetadataDetailsAdapter.class, mutableMetadata, dependencyFactory, dependencyDescriptorFactory, attributesFactory);
             processAllRules(metadata, details);
             updatedMetadata = mutableMetadata.asImmutable();
         }

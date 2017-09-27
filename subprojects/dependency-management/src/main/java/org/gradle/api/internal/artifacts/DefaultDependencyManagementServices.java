@@ -207,8 +207,8 @@ public class DefaultDependencyManagementServices implements DependencyManagement
                     artifactTypeRegistry);
         }
 
-        DefaultComponentMetadataHandler createComponentMetadataHandler(Instantiator instantiator, ImmutableModuleIdentifierFactory moduleIdentifierFactory, DependencyFactory dependencyFactory, DependencyDescriptorFactory dependencyDescriptorFactory) {
-            return instantiator.newInstance(DefaultComponentMetadataHandler.class, instantiator, moduleIdentifierFactory, dependencyFactory, dependencyDescriptorFactory);
+        DefaultComponentMetadataHandler createComponentMetadataHandler(Instantiator instantiator, ImmutableModuleIdentifierFactory moduleIdentifierFactory, DependencyFactory dependencyFactory, DependencyDescriptorFactory dependencyDescriptorFactory, ImmutableAttributesFactory attributesFactory) {
+            return instantiator.newInstance(DefaultComponentMetadataHandler.class, instantiator, moduleIdentifierFactory, dependencyFactory, dependencyDescriptorFactory, attributesFactory);
         }
 
         DefaultComponentModuleMetadataHandler createComponentModuleMetadataHandler(Instantiator instantiator, ImmutableModuleIdentifierFactory moduleIdentifierFactory) {

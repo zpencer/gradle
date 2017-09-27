@@ -15,14 +15,19 @@
  */
 package org.gradle.api.internal.artifacts.repositories.resolver;
 
+import com.google.common.collect.ImmutableList;
 import org.gradle.api.artifacts.ComponentMetadata;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.ModuleVersionSelector;
+import org.gradle.api.internal.artifacts.DefaultModuleVersionIdentifier;
 import org.gradle.internal.component.external.model.ModuleComponentResolveMetadata;
+import org.gradle.internal.component.model.DependencyMetadata;
 
 import java.util.List;
 
 public class ComponentMetadataAdapter implements ComponentMetadata {
     private final ModuleComponentResolveMetadata metadata;
+    private List<ModuleVersionIdentifier> dependencies;
 
     public ComponentMetadataAdapter(ModuleComponentResolveMetadata metadata) {
         this.metadata = metadata;
@@ -42,5 +47,18 @@ public class ComponentMetadataAdapter implements ComponentMetadata {
 
     public List<String> getStatusScheme() {
         return metadata.getStatusScheme();
+    }
+
+    @Override
+    public List<ModuleVersionIdentifier> getDependencies() {
+        if (dependencies == null) {
+            ImmutableList.Builder<ModuleVersionIdentifier> builder = ImmutableList.builder();
+            for (DependencyMetadata dependency : metadata.getDependencies()) {
+                ModuleVersionSelector requested = dependency.getRequested();
+                builder.add(new DefaultModuleVersionIdentifier(requested.getGroup(), requested.getName(), requested.getVersion()));
+            }
+            dependencies = builder.build();
+        }
+        return dependencies;
     }
 }

@@ -51,6 +51,11 @@ public interface DependencyMetadata {
     DependencyMetadata withTarget(ComponentSelector target);
 
     /**
+     * Returns a copy of this dependency with the given configuration removed.
+     */
+    DependencyMetadata withoutModuleConfiguration(String configurationName);
+
+    /**
      * Returns the component selector for this dependency.
      *
      * @return Component selector

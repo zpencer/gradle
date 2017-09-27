@@ -16,6 +16,7 @@
 
 package org.gradle.internal.component.external.model;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ListMultimap;
@@ -68,6 +69,16 @@ public class IvyDependencyMetadata extends DefaultDependencyMetadata {
     @Override
     protected DependencyMetadata withRequested(ModuleVersionSelector newRequested) {
         return new IvyDependencyMetadata(newRequested, dynamicConstraintVersion, force, changing, transitive, confs, getDependencyArtifacts(), excludes);
+    }
+
+    @Override
+    public DependencyMetadata withoutModuleConfiguration(String configurationName) {
+        ArrayListMultimap<String, String> reducedConfs = ArrayListMultimap.create(confs);
+        reducedConfs.removeAll(configurationName);
+        if (reducedConfs.isEmpty()) {
+            throw new IllegalArgumentException("Module configurations cannot be empty");
+        }
+        return new IvyDependencyMetadata(getRequested(), dynamicConstraintVersion, force, changing, transitive, reducedConfs, getDependencyArtifacts(), excludes);
     }
 
     @Override

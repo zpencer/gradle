@@ -75,6 +75,11 @@ public class DefaultProjectDependencyMetadata implements DependencyMetadata {
     }
 
     @Override
+    public DependencyMetadata withoutModuleConfiguration(String configurationName) {
+        return delegate.withoutModuleConfiguration(configurationName);
+    }
+
+    @Override
     public boolean isChanging() {
         return delegate.isChanging();
     }

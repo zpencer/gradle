@@ -57,4 +57,13 @@ public interface ComponentMetadata {
      */
     List<String> getStatusScheme();
 
+    /**
+     * Returns the dependencies of the component. These can be used
+     * to inspect them for making adjustment decisions in component
+     * metadata rules.
+     *
+     * @return the dependencies of the component
+     * @since 4.3
+     */
+    List<ModuleVersionIdentifier> getDependencies();
 }

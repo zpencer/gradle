@@ -127,6 +127,14 @@ public class MavenDependencyMetadata extends DefaultDependencyMetadata {
         return new MavenDependencyMetadata(scope, optional, newRequested, getDependencyArtifacts(), getExcludes());
     }
 
+    @Override
+    public DependencyMetadata withoutModuleConfiguration(String configurationName) {
+        if (configurationName.equals(moduleConfigurations.iterator().next())) {
+            throw new IllegalArgumentException("Module configurations cannot be empty");
+        }
+        return new MavenDependencyMetadata(scope, optional, getRequested(), getDependencyArtifacts(), getExcludes());
+    }
+
     public List<Exclude> getExcludes() {
         return excludes;
     }

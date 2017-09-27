@@ -32,6 +32,7 @@ import org.gradle.internal.component.model.ComponentResolveMetadata;
 import org.gradle.internal.resolve.result.BuildableModuleComponentMetaDataResolveResult;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 public class MetadataProvider {
@@ -161,6 +162,11 @@ public class MetadataProvider {
             @Override
             public List<String> getStatusScheme() {
                 return statusScheme;
+            }
+
+            @Override
+            public List<ModuleVersionIdentifier> getDependencies() {
+                return Collections.emptyList();
             }
         }
     }

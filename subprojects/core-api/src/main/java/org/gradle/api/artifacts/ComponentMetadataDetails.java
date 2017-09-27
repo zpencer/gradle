@@ -15,9 +15,11 @@
  */
 package org.gradle.api.artifacts;
 
+import groovy.lang.Closure;
 import org.gradle.api.Incubating;
 import org.gradle.api.NonExtensible;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -52,4 +54,53 @@ public interface ComponentMetadataDetails extends ComponentMetadata {
      * @param statusScheme the status scheme of the component
      */
     void setStatusScheme(List<String> statusScheme);
+
+    /**
+     * Removes all dependencies from the component. This is useful to resolve version conflicts
+     * or to replace dependencies with equivalent implementations which are then added
+     * via {@link #addDependency(String, Object)}.
+     *
+     * @param configurationName the configuration for the dependency
+     * @since 4.3
+     */
+    void removeAllDependencies(String configurationName);
+
+    /**
+     * Removes dependencies from the component which belong to the given group.
+     *
+     * @param configurationName the configuration for the dependency
+     * @param group the group (e.g. 'org.example')
+     * @since 4.3
+     */
+    void removeDependencies(String configurationName, String group);
+
+    /**
+     * Remove one dependency from the component.
+     *
+     * @param configurationName the configuration for the dependency
+     * @param dependencyNotation the dependency to remove (e.g. 'org.example:module1')
+     * @since 4.3
+     */
+    void removeDependency(String configurationName, Object dependencyNotation);
+
+    /**
+     * Add an additional dependency to the component. This can be used to add replacements for
+     * dependencies removed through one of the 'removeDependency' methods.
+     *
+     * @param configurationName the configuration for the dependency
+     * @param dependencyNotation the dependency (e.g. 'org.example:module2')
+     * @since 4.3
+     */
+    void addDependency(String configurationName, Object dependencyNotation);
+
+    /**
+     * Add an additional dependency to the component. This can be used to add replacements for
+     * dependencies removed through one of the 'removeDependency' methods.
+     *
+     * @param configurationName the configuration for the dependency
+     * @param dependencyNotation the dependency (e.g. 'org.example:module2')
+     * @param configureClosure further configuration of the dependency (of type {@link ModuleDependency}).
+     * @since 4.3
+     */
+    void addDependency(String configurationName, Object dependencyNotation, @Nullable Closure configureClosure);
 }

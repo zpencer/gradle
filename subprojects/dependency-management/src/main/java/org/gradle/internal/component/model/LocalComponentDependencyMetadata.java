@@ -229,6 +229,14 @@ public class LocalComponentDependencyMetadata implements LocalOriginDependencyMe
         }
     }
 
+    @Override
+    public DependencyMetadata withoutModuleConfiguration(String configurationName) {
+        if (configurationName.equals(getOrDefaultConfiguration(moduleConfiguration))) {
+            throw new IllegalArgumentException("Module configurations cannot be empty");
+        }
+        return new LocalComponentDependencyMetadata(selector, requested, moduleConfiguration, moduleAttributes, dependencyConfiguration, artifactNames, excludes, force, changing, transitive);
+    }
+
     private LocalOriginDependencyMetadata copyWithTarget(ComponentSelector selector, ModuleVersionSelector requested) {
         return new LocalComponentDependencyMetadata(selector, requested, moduleConfiguration, moduleAttributes, dependencyConfiguration, artifactNames, excludes, force, changing, transitive);
     }

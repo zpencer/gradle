@@ -653,6 +653,7 @@ public class Test extends ConventionTask implements JavaForkOptions, PatternFilt
         addTestListener(testCountLogger);
 
         testListenerInternalBroadcaster.add(new TestListenerAdapter(testListenerBroadcaster.getSource(), testOutputListenerBroadcaster.getSource()));
+        testListenerInternalBroadcaster.add(new TestListenerBuildOperationAdapter(getBuildOperationExecutor()));
 
         ProgressLogger parentProgressLogger = getProgressLoggerFactory().newOperation(Test.class);
         parentProgressLogger.setDescription("Test Execution");
@@ -665,7 +666,7 @@ public class Test extends ConventionTask implements JavaForkOptions, PatternFilt
         if (testExecuter == null) {
             testExecuter = new DefaultTestExecuter(getProcessBuilderFactory(), getActorFactory(), getModuleRegistry(),
                 getServices().get(WorkerLeaseRegistry.class),
-                getServices().get(BuildOperationExecutor.class),
+                getBuildOperationExecutor(),
                 getServices().get(StartParameter.class).getMaxWorkerCount(),
                 getServices().get(Clock.class));
         }

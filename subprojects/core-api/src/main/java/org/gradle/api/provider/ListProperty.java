@@ -25,7 +25,8 @@ import java.util.List;
 /**
  * Represents a property whose type is a {@link List} of elements of type {@link T}.
  *
- * <p><b>Note:</b> This interface is not intended for implementation by build script or plugin authors. An instance of this class can be created through the factory method {@link org.gradle.api.provider.ProviderFactory#listProperty(Class)}.
+ * <p><b>Note:</b> This interface is not intended for implementation by build script or plugin authors. An instance of
+ * this class can be created through the factory method {@link org.gradle.api.provider.ProviderFactory#listProperty(Class)}.
  *
  * @param <T> the type of elements.
  * @since 4.3
@@ -33,15 +34,17 @@ import java.util.List;
 @Incubating
 public interface ListProperty<T> extends PropertyState<List<T>> {
     /**
-     * Adds an element to the property.
+     * Adds an element to the property without evaluating existing providers already present.
      *
      * @param element The element, can be null.
      * @since 4.4
      */
-    void add(@Nullable T element);
+    void add(T element);
 
     /**
-     * Adds an element to the property given by the provider. This property will track the value of the provider and query its value each time the value of the property is queried. When the provider has no value, the element in the property will also have no value.
+     * Adds an element to the property given by the provider without evaluating existing providers already present.
+     * set. This property will track the value of the provider and query its value each time the value of the property
+     * is queried. When the provider has no value, the element in the property will also have no value.
      *
      * @param provider Provider
      * @since 4.4
@@ -49,7 +52,10 @@ public interface ListProperty<T> extends PropertyState<List<T>> {
     void add(Provider<? extends T> provider);
 
     /**
-     * Adds collection of elements to the property given by the provider. This property will track the value of the provider and query its value each time the value of the property is queried. When the provider has no value, the collection of element in the property will also have no value.
+     * Adds a collection of elements to the property given by the provider without evaluating existing providers
+     * already present. This property will track the value of the provider and query its value each time the value of
+     * the property is queried. When the provider has no value, the collection of element in the property will also
+     * have no value.
      *
      * @param provider Provider of elements
      * @since 4.4

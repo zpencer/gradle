@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
 @Incubating
 public interface PropertyState<T> extends Provider<T> {
     /**
-     * Sets the value of the property the given value.
+     * Sets the value of the property to the given value.
      *
      * <p>This method can also be used to clear the value of the property, by passing {@code null} as the value.
      *

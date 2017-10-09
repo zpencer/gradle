@@ -1,3 +1,23 @@
+The Gradle team is pleased to announce Gradle 4.3.
+
+We want Gradle to be easier to use, and so this release and more releases in the near future will feature changes that provide a more consistent user experience, or solidify an existing DSL or API.
+
+As a first example, in this release of Gradle, the runtime API (what you'd typically see in a Gradle script instead of a binary plugin) is now more consistent with the statically-compiled API. Specifically, Gradle now creates output directories, validates inputs and outputs, and allows Classpath property declaration similar to when annotations.
+
+Similarly, you can now use the `plugins {}` DSL in more cases. Subprojects can now apply plugins declared in `buildSrc` and non-core plugins already declared in the root build. Check out some examples below.
+
+Third, Gradle now defines connection and socket timeouts for all HTTP(S) requests. This prevents certain types of network problems from hanging builds, and is especially helpful for build cache users.
+
+This release of Gradle includes a couple handy features for users who prefer to use a CLI. A new console mode, `verbose`, will print outcomes of all tasks (like `UP-TO-DATE`) like Gradle 3.5 and earlier did. You can set this via `--console=verbose` or by a new Gradle property `org.gradle.console=(plain rich verbose)`. Furthermore, all boolean flags like `--parallel` now have inverses like `--no-parallel`.
+
+Use of the [build scan plugin](https://scans.gradle.com/get-started) becomes easier in Gradle 4.3, as it can be automatically applied when used with the `--scan` option. 
+
+The Gradle Kotlin DSL moves forward with the [v0.12.0 release](https://github.com/gradle/kotlin-dsl/releases/tag/v0.12.0) (included in Gradle 4.3). It brings Java 9 support, the latest Kotlin (**1.1.51**), better support for Kotlin dependencies, and more. 
+
+Last but not least, new task output `DirectoryVar` and `RegularFileVar` types carry generating task information that allow Gradle to infer task dependencies. Use these types in your custom tasks instead of `File`s.
+
+We hope you will build happiness with Gradle 4.3, and we look forward to your feedback [via Twitter](https://twitter.com/gradle) or on [GitHub](https://github.com/gradle).
+
 ## New and noteworthy
 
 Here are the new features introduced in this Gradle release.
@@ -175,7 +195,7 @@ gradlePlugin {
     plugins {
         myPlugins {
             id = "my-plugin"
-            implementationClass = "my.MyPlugin
+            implementationClass = "my.MyPlugin"
         }
     }
 }

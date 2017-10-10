@@ -1,18 +1,20 @@
 The Gradle team is pleased to announce Gradle 4.3.
 
-We want Gradle to be easier to use, and so this release and more releases in the near future will feature changes that provide a more consistent user experience, or solidify an existing DSL or API.
+First and foremost, this release of Gradle features [experimental build cache support for C and C++ compilation and linking](#TODO). This further improves performance of native application builds as it [does for the JVM ecosystem](https://blog.gradle.org/introducing-gradle-build-cache). 
 
-As a first example, in this release of Gradle, the runtime API (what you'd typically see in a Gradle script instead of a binary plugin) is now more consistent with the statically-compiled API. Specifically, Gradle now creates output directories, validates inputs and outputs, and allows Classpath property declaration similar to when annotations.
+Several improvements have been made to improve user experience and solidify existing APIs.
 
-Similarly, you can now use the `plugins {}` DSL in more cases. Subprojects can now apply plugins declared in `buildSrc` and non-core plugins already declared in the root build. Check out some examples below.
+As a first example, you can now [use the `plugins {}` DSL in more cases](#more-use-cases-supported-using-the-plugins-{}-block). Subprojects can now apply plugins declared in `buildSrc` and non-core plugins already declared in parent projects.
 
-Third, Gradle now defines connection and socket timeouts for all HTTP(S) requests. This prevents certain types of network problems from hanging builds, and is especially helpful for build cache users.
+Second, Gradle now [defines connection and socket timeouts for all HTTP(S) requests](#timeouts-for-http/https-requests). This prevents certain types of network problems from hanging builds, and is especially helpful for build cache users. Furthermore, Gradle will blacklist 
 
-This release of Gradle includes a couple handy features for users who prefer to use a CLI. A new console mode, `verbose`, will print outcomes of all tasks (like `UP-TO-DATE`) like Gradle 3.5 and earlier did. You can set this via `--console=verbose` or by a new Gradle property `org.gradle.console=(plain rich verbose)`. Furthermore, all boolean flags like `--parallel` now have inverses like `--no-parallel`.
+Third, the runtime API (what you'd typically see in a Gradle script instead of a binary plugin) is now [more consistent with the statically-compiled API](#task-input/output-annotations-and-runtime-api). Specifically, Gradle now creates output directories, validates inputs and outputs, and allows classpath property declaration similar to when using annotations.
 
-Use of the [build scan plugin](https://scans.gradle.com/get-started) becomes easier in Gradle 4.3, as it can be automatically applied when used with the `--scan` option. 
+The Gradle Kotlin DSL moves forward with the [v0.12.0 release](https://github.com/gradle/kotlin-dsl/releases/tag/v0.12.0) (included in Gradle 4.3). It brings Java 9 support, the latest Kotlin (**1.1.51**), better support for Kotlin dependencies, and more.
 
-The Gradle Kotlin DSL moves forward with the [v0.12.0 release](https://github.com/gradle/kotlin-dsl/releases/tag/v0.12.0) (included in Gradle 4.3). It brings Java 9 support, the latest Kotlin (**1.1.51**), better support for Kotlin dependencies, and more. 
+A [new console `verbose` mode](#new-verbose-console-type) will print outcomes of all tasks (like `UP-TO-DATE`) like Gradle 3.5 and earlier did. You can set this via `--console=verbose` or by a new Gradle property `org.gradle.console=(plain rich verbose)`. Furthermore, all boolean flags like `--parallel` now have inverses like `--no-parallel`.
+
+Use of the [build scan plugin](https://scans.gradle.com/get-started) becomes more convenient in Gradle 4.3, as it can be automatically applied when used with the `--scan` option.
 
 Last but not least, new task output `DirectoryVar` and `RegularFileVar` types carry generating task information that allow Gradle to infer task dependencies. Use these types in your custom tasks instead of `File`s.
 

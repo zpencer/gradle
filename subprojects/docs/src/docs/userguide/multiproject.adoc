@@ -531,15 +531,6 @@ Assume you are working on a single project, the “`:api`” project. You have b
         </sample>
 ++++
 
-While you are working in a typical development cycle repeatedly building and testing changes to the “`:api`” project (knowing that you are only changing files in this one project), you may not want to even suffer the expense of building “`:shared:compile`” to see what has changed in the “`:shared`” project. Adding the “`-a`” option will cause Gradle to use cached jars to resolve any project lib dependencies and not try to re-build the depended on projects.
-
-++++
-<sample id="multitestingBuildDashA" dir="userguide/multiproject/dependencies/java" title="Partial Build and Test Single Project">
-            <test args=":shared:assemble"/>
-            <output args="-a :api:build"/>
-        </sample>
-++++
-
 If you have just gotten the latest version of source from your version control system which included changes in other projects that “`:api`” depends on, you might want to not only build all the projects you depend on, but test them as well. The `buildNeeded` task also tests all the projects from the project lib dependencies of the testRuntime configuration.
 
 ++++

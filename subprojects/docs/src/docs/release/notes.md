@@ -30,6 +30,11 @@ in the next major Gradle version (Gradle 5.0). See the User guide section on the
 
 The following are the newly deprecated items in this Gradle release. If you have concerns about a deprecation, please raise it via the [Gradle Forums](https://discuss.gradle.org).
 
+### Deprecation of `--no-rebuild`
+
+This option was introduced in very early version of Gradle when up-to-date checking was still rather expensive, which is no longer the case. 
+We're to remove this option to avoid users' confusion.
+
 <!--
 ### Example deprecation
 -->

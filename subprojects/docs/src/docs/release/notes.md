@@ -145,11 +145,6 @@ When using annotation processors, Java source may be generated into a directory 
 
 The JaCoCo plugin has been upgraded to use [JaCoCo version 0.7.9](http://www.jacoco.org/jacoco/trunk/doc/changes.html) by default.
 
-### Eclipse plugin separates output folders
-
-The `eclipse` plugin now defines separate output directories for each source folders. Also, each source folder and dependency defines an additional `gradle_source_sets` classpath attribute. The attribute specifies to which sourceSet the entry belonged. Future [Buildship](http://eclipse.org/buildship) versions will use this information to separate source sets when launching Java applications within Eclipse.
-
-
 ### More use cases supported using the `plugins {}` block
 
 Non-core plugins already requested using the `plugins {}` block on a parent project can now be requested in child projects:
@@ -311,10 +306,6 @@ Instead of the `file()` and `files()` methods on `TaskDestroyables`, now there i
 - `AbstractNativeCompileTask.compilerArgs` changed type to `ListProperty<String>` from `List<String>`.
 - `AbstractNativeCompileTask.objectFileDir` changed type to `DirectoryVar` from `File`.
 - `AbstractLinkTask.linkerArgs` changed type to `ListProperty<String>` from `List<String>`.
-
-### Changes in the `eclipse` plugin
-
-The default output location in [EclipseClasspath](dsl/org.gradle.plugins.ide.eclipse.model.EclipseClasspath.html#org.gradle.plugins.ide.eclipse.model.EclipseClasspath:defaultOutputDir) changed from `${project.projectDir}/bin` to `${project.projectDir}/bin/default`.
 
 ### Incremental build respects order of declared output files
 

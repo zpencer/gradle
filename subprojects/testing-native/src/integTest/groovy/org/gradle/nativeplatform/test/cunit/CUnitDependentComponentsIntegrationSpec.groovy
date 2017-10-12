@@ -22,8 +22,10 @@ import org.gradle.nativeplatform.fixtures.app.CHelloWorldApp
 import org.gradle.util.Requires
 import org.gradle.util.TestPrecondition
 import org.gradle.util.TextUtil
+import spock.lang.Ignore
 
 @Requires(TestPrecondition.CAN_INSTALL_EXECUTABLE)
+@Ignore
 class CUnitDependentComponentsIntegrationSpec extends AbstractInstalledToolChainIntegrationSpec {
 
     def prebuiltDir = buildContext.getSamplesDir().file("native-binaries/cunit/libs")

@@ -17,8 +17,10 @@
 package org.gradle.integtests.samples
 
 import org.junit.runner.RunWith
+import spock.lang.Ignore
 
 @RunWith(UserGuideSamplesRunner.class)
+@Ignore
 class UserGuideSamplesIntegrationTest {
     /*
     Important info:
